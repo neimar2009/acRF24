@@ -1,0 +1,17 @@
+{
+  "name": "acRF24",
+  "keywords": "rf, radio, wireless, spi",
+  "description": "Driver for se8r01 e nRF24LF01+ 2.4GHz Wireless Transceiver",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/neimar2009/acRF24"
+  },
+  "version": "0.0.1",
+  "frameworks": "arduino",
+  "platforms": [
+    "atmelavr",
+    "attiny85",
+    "attiny84"
+  ]
+}
