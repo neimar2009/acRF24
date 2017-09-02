@@ -156,7 +156,7 @@ Help me
   Comments and suggestions help in improving the project. Welcome.
 
 ------------
-Tanks
+Thanks
 ------------
   **I thank God.**
   
