@@ -119,7 +119,7 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitância em pF, tempo em milisegundo
                                |    1n60   |         |    LED
                                |           |         |   (red)
                                |  +---||---x         |          +-----+
-                +-\/-+         |  | 100nF  |         |--- CE   3| R R |
+                +-\/-+         |  |  100nF |         |--- CE   3| R R |
     RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
     NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
     NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
