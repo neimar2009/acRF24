@@ -5,7 +5,7 @@ Parce que je n'ai pas trouvé une bibliothèque qui répondrait à mes besoins, 
 * Contient des paramètres à utiliser avec **nRF24L01+** (dans la version 0.0.1 pas entièrement testé).
 * Basé sur les manuels:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
- e [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
+ et [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
 * Développement axé sur l'interface de haut niveau.
 * Les méthodes d'accès de faible niveau à la puce sont réservées.
 * Contient SPI propriétaire et adaptatif avec des connexions supprimées à utiliser dans ATtiny85.

@@ -7,7 +7,7 @@ Because I did not find a library that would meet my needs I developed the one I 
 * Contains settings for use with **nRF24L01+** (in version 0.0.1 not fully tested).
 * Based on manuals:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
- e [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
+ and [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
 * Development focused on the high level interface.
 * Methods for low-level access to the chip are reserved.
 * Contains own SPI, adaptable with suppressed connections for use in ATtiny85.
