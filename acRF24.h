@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define __SE8R01__        // <- Comente se não usar
+#define __SE8R01__        // <- Comment if you do not use
 // or
 // #define __nRF24L01P__
 
@@ -434,7 +434,7 @@
 // Class RF24
 // -----------------------------------------------
 
-// Quantidade de rádios (Mudar para quantidade desejada).
+// Number of radios (Change to desired quantity).
 #define RADIO_AMOUNT          12
 
 // flag state

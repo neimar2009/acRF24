@@ -8,7 +8,7 @@ Por não encontrar um biblioteca que suprisse minhas necessidade desenvolvi esta
  e [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
 * Desenvolvimento voltado à interface de alto nível.
 * É reservado métodos para acesso de baixo nível ao chip.
-* Contém SPI próprio, adaptável com conexõe suprimida para uso em ATtiny85.
+* Contém SPI próprio, adaptável com conexões suprimida para uso em ATtiny85.
 * Métodos desenvolvidos no propósito de usar o automatismo já contido no chip.
 * Desenvolvimento com o propósito de compatibilidade entre chips.
 * Posibilita até 254 rádios.
@@ -24,7 +24,7 @@ Diretivas
 ```
 #pragma once
 
-#define __SE8R01__        // <- Comente se não usar
+#define __SE8R01__        // <- Comment if you do not use
 // or
 // #define __nRF24L01P__
 
@@ -52,7 +52,7 @@ Diretivas
 ```
 ...
 
-// Quantidade de rádios (Mudar para quantidade desejada).
+// Number of radios (Change to desired quantity).
 #define RADIO_AMOUNT          12
 
 // flag state
@@ -87,7 +87,7 @@ Ajuda!
 
 
 Teste
-
+------------
   Os testes de desenvolvimento foram feitos entre um *Arduino UNO* e um *ATTiny85*.
   
   Inicialmente os exemplos serão baseados nesta configuração.
