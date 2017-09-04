@@ -3,7 +3,8 @@
 
 [Poruguês](README_pt-br.md)
 
-Because I did not find a library that would meet my needs I developed the one I present here.* Contém definições para uso com **nRF24L01+** (na versão 0.0.1 não está totalmente testada).
+Because I did not find a library that would meet my needs I developed the one I present here.
+* Contains settings for use with **nRF24L01+** (in version 0.0.1 not fully tested).
 * Based on manuals:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
  e [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
@@ -16,10 +17,8 @@ Because I did not find a library that would meet my needs I developed the one I 
 
 Directives
 ------------
-  The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.
-  
-  In case of compiling to **nRF24L01+**, use the `__nRF24L01P__` directive.
-
+  The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.    
+  In case of compiling to **nRF24L01+**, use the `__nRF24L01P__` directive.    
   Go to the top of the file `acRF24.h` and change the comment as desired.
 
 ```
@@ -33,7 +32,6 @@ Directives
 
 ```
 
-
 `sourceID()`
 ------------
   Fan-Out Mode uses the first byte of payload to identify the radio from which
@@ -41,12 +39,9 @@ Directives
   process is internal and it is possible to have access to the information of
   which radio is sending the message, when calling `sourceID ()`.
   
-  This method facilitates the use of up to *254* radios.
-  
-  – Radio ID 0 indicates no radio and will be ignored;
-  
-  – Radio ID 255 indicates header, will be ignored.
-  
+  This method facilitates the use of up to *254* radios:    
+  – Radio ID 0 indicates no radio and will be ignored;    
+  – Radio ID 255 indicates header, will be ignored.    
   Quantity: 256 - (neutral + header) = *254*.
   
   For many radios there is an expressive use of memory, for this reason a base
@@ -62,7 +57,6 @@ Directives
 // flag state
 ...
 ```
-
   Replace 12 with the desired amount. Observe the limit of *254*.
 
 
@@ -70,7 +64,7 @@ Directives
 ------------
   When the radio receiver falls for a long period of time, * ACK * does not
   return causing the transmitter to become inoperative.
-
+  
   `watchTX ()` sets the time in milliseconds that the transmitter will wait
   for the * ACK * response, while waiting is called `reuseTXpayload ()`, after
   this time `flushTX ()` is called and thus releasing the transmitter to
