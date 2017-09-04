@@ -1,32 +1,31 @@
 
 **Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85**
 
-Por não encontrar um biblioteca que suprice minhas necessidade desenvolvi esta que apresento aqui.
-* Contém definições para uso com **nRF24L01+** (na versão 0.0.1 não está totalmente testada).
-* Baseado nos manuais:
+[Poruguês](README_pt-br.md)
+
+Because I did not find a library that would meet my needs I developed the one I present here.* Contém definições para uso com **nRF24L01+** (na versão 0.0.1 não está totalmente testada).
+* Based on manuals:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
  e [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
-* Desenvolvimento voltado à interface de alto nível.
-* É reservado métodos para acesso de baixo nível ao chip.
-* Esta biblioteca vem com o propósito de simplificar o uso deste dispositivo.
-* Contém SPI próprio, adaptável com conexõe suprimida para uso em ATtiny85.
-* Métodos desenvolvidos no propósito de usar o automatismo já contido no chip.
-* Desenvolvimento com o propósito de compatibilidade entre chips.
-* Posibilita até 254 rádios.
-------------
-Diretivas
-------------
-  A complilação está ativa para o chip **SE8R01** com a diretiva `__SE8R01__`.
-  
-  Em caso de compilar para **nRF24L01+**, usar a diretiva `__nRF24L01P__`.
+* Development focused on the high level interface.
+* Methods for low-level access to the chip are reserved.
+* Contains own SPI, adaptable with suppressed connections for use in ATtiny85.
+* Methods developed in order to use the automatism already contained in the chip.
+* Development for the purpose of chip compatibility.
+* It enables up to 254 radios.
 
-  Vá ao topo do arquivo `acRF24.h` e altere o comentário como desejado.
+Directives
+------------
+  The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.
+  
+  In case of compiling to **nRF24L01+**, use the `__nRF24L01P__` directive.
+
+  Go to the top of the file `acRF24.h` and change the comment as desired.
 
 ```
-#ifndef _ACRF24_H_
-#define _ACRF24_H_
+#pragma once
 
-#define __SE8R01__      // <- Comente se não usar 
+#define __SE8R01__        // <- Comment if you do not use
 // or
 // #define __nRF24L01P__
 
@@ -34,85 +33,85 @@ Diretivas
 
 ```
 
-------------
+
 `sourceID()`
 ------------
-  Modo Fan-Out usa o primeiro byte de payload para identificar o rádio do qual
-  está sendo envianda a mensagem. Portanto o tamanho máximo de dados passa a
-  ser 31. O processo é interno e é possível se ter acesso a informação de qual
-  rádio está enviando a messagem, ao chamar `sourceID()`.
+  Fan-Out Mode uses the first byte of payload to identify the radio from which
+  the message is being sent. Therefore the maximum data size becomes 31. The
+  process is internal and it is possible to have access to the information of
+  which radio is sending the message, when calling `sourceID ()`.
   
-  Este método facilita o uso de até *254* rádios.
+  This method facilitates the use of up to *254* radios.
   
-  – Rádio ID 0 indica a inexistência de rádio e será ignorado;
+  – Radio ID 0 indicates no radio and will be ignored;
   
-  – Rádio ID 255 indica cabeçalho, será ignorado.
+  – Radio ID 255 indicates header, will be ignored.
   
-  Quantidade: 256 - ( neutro + cabeçalho ) = *254*.
+  Quantity: 256 - (neutral + header) = *254*.
   
-  Para muitos rádios há um expressivo uso de memória, por este motivo foi escolhido uma
-  configuração base de 12 rádios. Em havendo a necessidade de um número maior,
-  então alterar em `acRF24.h`:
+  For many radios there is an expressive use of memory, for this reason a base
+  configuration of 12 radios has been chosen. If there is a need for a larger
+  number, then change to `acRF24.h`:
 
 ```
 ...
 
-// Quantidade de rádios (Mudar para quantidade desejada).
+// Number of radios (Change to desired quantity).
 #define RADIO_AMOUNT          12
 
 // flag state
 ...
 ```
 
-  Substituir 12 pela quantidade desejada. Observe o limite de *254*.
+  Replace 12 with the desired amount. Observe the limit of *254*.
 
-------------
+
 `watchTX()`
 ------------
-  Quando cai, por longo período o rádio receptor, *ACK* não retorna fazendo o
-  transmissor ficar inoperante.
-  
-  `watchTX()` define o tempo em milesegundos que o transmissor ficará esperando
-  a resposta *ACK*, enquanto espera é chamado `reuseTXpayload()`, após este
-  tempo `flushTX()` é chamado e assim liberando o transmissor para operar com
-  outros rádios.
+  When the radio receiver falls for a long period of time, * ACK * does not
+  return causing the transmitter to become inoperative.
 
-------------
+  `watchTX ()` sets the time in milliseconds that the transmitter will wait
+  for the * ACK * response, while waiting is called `reuseTXpayload ()`, after
+  this time `flushTX ()` is called and thus releasing the transmitter to
+  operate with others radios
+
+
 `enableFanOut()`
 ------------
-  Chame `enableFanOut(true)` para ativar a posibilidade de receber a
-  identificação do rádio que está enviando a mensagem. Esta ativação deve ser
-  comum aos rádios que irão se cominicar.
+  Call `enableFanOut (true)` to enable the possibility of receiving the
+  identification of the radio that is sending the message. This activation
+  should be common to radios that will commence.
 
-------------
+
 Help!
 ------------
-  Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
-  exemplo. Adapte os mesmos para a necessidade do projeto.
+  For lack of elaboration of a help file, please analyze the sample files.
+  Adapt the same to the project need.
 
-------------
+
 Test
 ------------
-  Os testes de desenvolvimento foram feitos entre um *Arduino UNO* e um *ATTiny85*.
+  Development tests were done between an *Arduino UNO* and an *ATTiny85*.
   
-  Inicialmente os exemplos serão baseados nesta configuração.
+  Initially the examples will be based on this configuration.
 
-------------
-Atraso CSn e esqumático
+
+CSn delay, and schematic
 ------------
 ```  
-T_PECSN2ON  = 50 * 0.1;          // <- Capacitância em pF, tempo em milisegundos.
-        `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; tempo de acionamento.
+T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
+        `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
 
-T_PECSN2OFF = 2200 * 0.1;        // <- Capacitância em pF, tempo em milisegundos.
-        `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; tempo para desligamento.
+T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
+        `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
 ```  
-  Obs.: 
-  * Resistor com valor muito baixo interfere no carregamento do código fonte.
-  * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
-    conectá-lo somente após a carga do código fonte, na sequência dar reset.
-  * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
-    o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+  Note: 
+  * Resistor with very low value interferes with loading the source code.
+  * Value of 1kΩ was tested and worked well. However it is necessary to connect
+    it only after loading the source code, in the sequence reset.
+  * Use Germanium diode that gives voltage drop of 0.2V. Silicon Diode the
+    minimum voltage value is 0.6V being required for the 0.3V chip.
 ```  
                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
@@ -130,23 +129,14 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitância em pF, tempo em milisegundo
 
 ```
 
-------------
+
 Clock
 ------------
-  A biblioteca providencia um método automático para ajustar o clock limite do chip.
+ The library provides an automatic method to adjust the chip limit clock.
 
-------------
+
 Help me
 ------------
-  Devido a pouco tempo disponível para o desenvolvimento, apresento este projeto
-  na forma que se vê. Pesso desculpas mas até o momento foi o que consequi fazer.
-  
-  Meu inglês é fraco, na medida do possível, que depende de tempo disponível,
-  procederei a tradução.
-  
-  Comentários e sujestões ajudarão no aprimoramento do projeto. Seja bem vindo.
-
-
   Due to the limited time available for development, I present this project in the
   way that you see it. Personally, I'm sorry but so far I have been able to do so.
   
@@ -155,7 +145,7 @@ Help me
   
   Comments and suggestions help in improving the project. Welcome.
 
-------------
+
 Thanks
 ------------
   **I thank God.**

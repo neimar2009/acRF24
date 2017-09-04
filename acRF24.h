@@ -4,8 +4,7 @@
  * acRF24 library.
  */
 
-#ifndef _ACRF24_H_
-#define _ACRF24_H_
+#pragma once
 
 #define __SE8R01__        // <- Comente se não usar
 // or
@@ -397,24 +396,24 @@
 // Atraso CSn e esqumático
 /****************************************************************************
 
-T_PECSN2ON  = 50 * 0,1;           // Capacitância em pF, tempo em milisegundos.
-         |
-         `--> 50Ω x 0,0000001uF   = 0,000005s  ->  5us; tempo de acionamento.
+  T_PECSN2ON  = 50 * 0,1;           // Capacitância em pF, tempo em milisegundos.
+           |
+           `--> 50Ω x 0,0000001uF   = 0,000005s  ->  5us; tempo de acionamento.
 
-T_PECSN2OFF =  2200 * 0,1;        // Capacitância em pF, tempo em milisegundos.
-         |
-         `--> 2.2kΩ x 0,0000001uF = 0,001s  ->  220us; tempo para desligamento.
-*/  
-// Obs.:
-// * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-//   Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
-// * Resistor com valor muito baixo interfere no carregamento do código fonte.
-// * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
-//   conectá-lo somente após a carga do código fonte, na sequência dar reset.
-// * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
-//   o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-/*  
-                                                         //
+  T_PECSN2OFF =  2200 * 0,1;        // Capacitância em pF, tempo em milisegundos.
+           |
+           `--> 2.2kΩ x 0,0000001uF = 0,001s  ->  220us; tempo para desligamento.
+  */  
+  // Obs.:
+  // * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
+  //   Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
+  // * Resistor com valor muito baixo interfere no carregamento do código fonte.
+  // * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
+  //   conectá-lo somente após a carga do código fonte, na sequência dar reset.
+  // * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
+  //   o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+  /*  
+                                                           //
                                +---|<|----x--[2k2]--x---|<|--- 5V 
                                |   1n60   |         |   LED
                                |          |         |  (red)
@@ -644,5 +643,5 @@ private:
   void clearIRQ();
 };
 
-#endif
+// #endif
 
