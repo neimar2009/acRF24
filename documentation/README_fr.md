@@ -35,7 +35,7 @@ Directives
 
 `sourceID()`
 ------------
-  Le mode Fan-Out utilise le premier octet de charge utile pour identifier la radio à partir de laquelle le message est envoyé. Par conséquent, la taille maximale des données devient 31. Le processus est interne et il est possible d'avoir accès aux informations dont la radio envoie le message en appelant `sourceID ()`.
+  Le mode Fan-Out utilise le premier octet de charge utile pour identifier la radio à partir de laquelle le message est envoyé. Par conséquent, la taille maximale des données devient 31. Le processus est interne et il est possible d'avoir accès aux informations dont la radio envoie le message en appelant `sourceID()`.
   
   Cette méthode facilite l'utilisation de radios jusqu'à *254*:    
   – L'ID de radio 0 indique que la radio ne sera pas ignorée;    
@@ -59,14 +59,14 @@ Directives
 
 `watchTX()`
 ------------
-  Lorsque le récepteur radio tombe pendant une longue période, * ACK * ne retourne pas, provoquant l'inopération de l'émetteur.
+  Lorsque le récepteur radio tombe pendant une longue période, *ACK* ne retourne pas, provoquant l'inopération de l'émetteur.
 
-  `watchTX ()` définit le temps en millisecondes que l'émetteur attendra la réponse *ACK*, alors que l'attente est appelée `reuseTXpayload ()`, après cette période `flushTX ()` est appelé et libère l'émetteur pour fonctionner avec d'autres radios
+  `watchTX()` définit le temps en millisecondes que l'émetteur attendra la réponse *ACK*, alors que l'attente est appelée `reuseTXpayload()`, après cette période `flushTX()` est appelé et libère l'émetteur pour fonctionner avec d'autres radios
 
 
 `enableFanOut()`
 ------------
-  Appelez `enableFanOut (true)` pour permettre la possibilité de recevoir l'identification de la radio qui envoie le message. Cette activation devrait être commune aux radios qui commenceront.
+  Appelez `enableFanOut(true)` pour permettre la possibilité de recevoir l'identification de la radio qui envoie le message. Cette activation devrait être commune aux radios qui commenceront.
 
 
 Fichier d'aide!
@@ -90,7 +90,9 @@ T_PECSN2ON  = 50 * 0.1;          // <- Capacitance en pF, temps en millisecondes
 T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance en pF, temps en millisecondes.
         `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; temps de conduite.
 ```  
-  Remarque: 
+  Remarque:
+  * Lorsque vous changez la valeur de la résistance, modifiez également la valeur de la directive `T_PECSN2OFF`.
+  Sans cet ajustement, le système peut ne pas fonctionner ou fonctionner avec une faiblesse.
   * La résistance à très faible valeur interfère avec le chargement du code source.
   * La valeur de 1kΩ a été testée et fonctionne bien. Cependant, il est nécessaire de le connecter uniquement après le chargement du code source, dans la réinitialisation de la séquence.
   * Utilisez une diode de germanium qui donne une chute de tension de 0,2 V. Diode de silicium La valeur de tension minimale est de 0.6V pour la puce de 0.3V.
@@ -123,7 +125,7 @@ Aidez-moi
   
   Mon français est faible, dans la mesure du possible, selon le temps disponible, je traduirai.
   
-  Les commentaires et suggestions aident à améliorer le projet. Bienvenue.
+  Les commentaires et les suggestions aideront à améliorer le projet. Bienvenue.
 
 
 Remerciements

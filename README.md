@@ -1,7 +1,7 @@
 
 **Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85**
 
-[Poruguês](documentation/README_pt-br.md), [Français](documentation/README_fr.md)
+[Poruguês](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
 * Contains settings for use with **nRF24L01+** (in version 0.0.1 not fully tested).
@@ -65,15 +65,15 @@ Directives
   When the radio receiver falls for a long period of time, * ACK * does not
   return causing the transmitter to become inoperative.
   
-  `watchTX ()` sets the time in milliseconds that the transmitter will wait
-  for the * ACK * response, while waiting is called `reuseTXpayload ()`, after
-  this time `flushTX ()` is called and thus releasing the transmitter to
+  `watchTX()` sets the time in milliseconds that the transmitter will wait
+  for the * ACK * response, while waiting is called `reuseTXpayload()`, after
+  this time `flushTX()` is called and thus releasing the transmitter to
   operate with others radios
 
 
 `enableFanOut()`
 ------------
-  Call `enableFanOut (true)` to enable the possibility of receiving the
+  Call `enableFanOut(true)` to enable the possibility of receiving the
   identification of the radio that is sending the message. This activation
   should be common to radios that will commence.
 
@@ -93,20 +93,22 @@ Test
 
 CSn delay, and schematic
 ------------
-```  
-T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
-        `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
+```
+  T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
+          `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
 
-T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
-        `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
-```  
+  T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
+          `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
+```
   Note: 
+  * When changing the value of the resistor, also change the value of the `T_PECSN2OFF` directive.    
+    Without this adjustment the system may not work, or operate with weakness.
   * Resistor with very low value interferes with loading the source code.
   * Value of 1kΩ was tested and worked well. However it is necessary to connect
     it only after loading the source code, in the sequence reset.
   * Use Germanium diode that gives voltage drop of 0.2V. Silicon Diode the
     minimum voltage value is 0.6V being required for the 0.3V chip.
-```  
+```
                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
@@ -120,9 +122,7 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
        |        +----+            |        +------------- CSN  4| 0 0 |
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
-
 ```
-
 
 Clock
 ------------
@@ -137,8 +137,7 @@ Help me
   My English is weak, to the extent possible, depending on available time, I will
   translate.
   
-  Comments and suggestions help in improving the project. Welcome.
-
+  Comments and suggestions will help in improving the project. Welcome.
 
 Thanks
 ------------

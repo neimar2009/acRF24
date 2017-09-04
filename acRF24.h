@@ -395,40 +395,38 @@
 
 // Atraso CSn e esqumático
 /****************************************************************************
+'''
+  T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
+          `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
 
-  T_PECSN2ON  = 50 * 0,1;           // Capacitância em pF, tempo em milisegundos.
-           |
-           `--> 50Ω x 0,0000001uF   = 0,000005s  ->  5us; tempo de acionamento.
-
-  T_PECSN2OFF =  2200 * 0,1;        // Capacitância em pF, tempo em milisegundos.
-           |
-           `--> 2.2kΩ x 0,0000001uF = 0,001s  ->  220us; tempo para desligamento.
-  */  
-  // Obs.:
-  // * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-  //   Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
-  // * Resistor com valor muito baixo interfere no carregamento do código fonte.
-  // * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
-  //   conectá-lo somente após a carga do código fonte, na sequência dar reset.
-  // * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
-  //   o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-  /*  
-                                                           //
-                               +---|<|----x--[2k2]--x---|<|--- 5V 
-                               |   1n60   |         |   LED
-                               |          |         |  (red)
-                               |  +--||---x         |          +-----+
-                +-\/-+         |  | 100nF |         |--- CE   3| R R |
-    RESET PB5  1|o   |8  Vcc --|--|-------|---------x--- VCC  2| S F |
-    NC    PB3  2|    |7  PB2 --x--|-------|------------- SCK  5| E 2 |
-    NC    PB4  3|    |6  PB1 -----|-------|------------- MISO 6| 8 4 |
-       +- GND  4|    |5  PB0 -----|-------|------------- MOSI 7| R L |
-       |        +----+            |       +------------- CSN  4| 0 0 |
-       +--------------------------x--------------------- GND  1| 1 1 |
-                                                               +-----+
-
+  T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
+          `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
+'''
+  Note: 
+  * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
+    Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
+  * Resistor com valor muito baixo interfere no carregamento do código fonte.
+  * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
+    conectá-lo somente após a carga do código fonte, na sequência dar reset.
+  * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
+    o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+'''
+                                                          //
+                               +----|<|----x--[2k2]--x----|<|---- 5V 
+                               |    1n60   |         |    LED
+                               |           |         |   (red)
+                               |  +---||---x         |          +-----+
+                +-\/-+         |  |  100nF |         |--- CE   3| R R |
+    RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
+    NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
+    NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
+       +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
+       |        +----+            |        +------------- CSN  4| 0 0 |
+       +--------------------------x---------------------- GND  1| 1 1 |
+                                                                +-----+
+'''
 ****************************************************************************/
-           
+
 
 // -----------------------------------------------
 // Class RF24
