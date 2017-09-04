@@ -40,12 +40,9 @@ Diretivas
   ser 31. O processo é interno e é possível se ter acesso a informação de qual
   rádio está enviando a messagem, ao chamar `sourceID()`.
   
-  Este método facilita o uso de até *254* rádios.
-  
-  – Rádio ID 0 indica a inexistência de rádio e será ignorado;
-  
-  – Rádio ID 255 indica cabeçalho, será ignorado.
-  
+  Este método facilita o uso de até *254* rádios:    
+  – Rádio ID 0 indica a inexistência de rádio e será ignorado;    
+  – Rádio ID 255 indica cabeçalho, será ignorado.    
   Quantidade: 256 - ( neutro + cabeçalho ) = *254*.
   
   Para muitos rádios há um expressivo uso de memória, por este motivo foi escolhido uma
@@ -83,13 +80,13 @@ Diretivas
   comum aos rádios que irão se cominicar.
 
 
-Help!
+Ajuda!
 ------------
   Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
   exemplo. Adapte os mesmos para a necessidade do projeto.
 
 
-Test
+Teste
 
   Os testes de desenvolvimento foram feitos entre um *Arduino UNO* e um *ATTiny85*.
   
@@ -134,7 +131,7 @@ Clock
   A biblioteca providencia um método automático para ajustar o clock limite do chip.
 
 
-Help me
+Ajude-me
 ------------
   Devido a pouco tempo disponível para o desenvolvimento, apresento este projeto
   na forma que se vê. Pesso desculpas mas até o momento foi o que consequi fazer.
@@ -145,7 +142,7 @@ Help me
   Comentários e sujestões ajudarão no aprimoramento do projeto. Seja bem vindo.
 
 
-Thanks
+Agradecimentos
 ------------
   **Agradeço a God.**
   
