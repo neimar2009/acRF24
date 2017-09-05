@@ -69,17 +69,10 @@ Directives
   Appelez `enableFanOut(true)` pour permettre la possibilité de recevoir l'identification de la radio qui envoie le message. Cette activation devrait être commune aux radios qui commenceront.
 
 
-Fichier d'aide!
+ATTiny
 ------------
-  Par manque d'élaboration d'un fichier d'aide, veuillez analyser les exemples de fichiers. Adaptez-vous aux besoins du projet.
-
-
-Test
-------------
-  Les tests de développement ont été effectués entre un *Arduino UNO* et un *ATTiny85*.
+  Core for ATTiny développé par [David A. Mellis](https://github.com/damellis/attiny)
   
-  Initialement, les exemples seront basés sur cette configuration.
-
 
 CSn delay, et schématique
 ------------
@@ -97,7 +90,7 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance en pF, temps en millisecondes
   * La valeur de 1kΩ a été testée et fonctionne bien. Cependant, il est nécessaire de le connecter uniquement après le chargement du code source, dans la réinitialisation de la séquence.
   * Utilisez une diode de germanium qui donne une chute de tension de 0,2 V. Diode de silicium La valeur de tension minimale est de 0.6V pour la puce de 0.3V.
 ```  
-                                                          //
+                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
                                |           |         |   (red)
@@ -117,6 +110,18 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance en pF, temps en millisecondes
 Clock
 ------------
   La bibliothèque fournit une méthode automatique pour ajuster l'horloge limite de puce.
+
+
+Fichier d'aide!
+------------
+  Par manque d'élaboration d'un fichier d'aide, veuillez analyser les exemples de fichiers. Adaptez-vous aux besoins du projet.
+
+
+Test
+------------
+  Les tests de développement ont été effectués entre un *Arduino UNO* et un *ATTiny85*.
+  
+  Initialement, les exemples seront basés sur cette configuration.
 
 
 Aidez-moi

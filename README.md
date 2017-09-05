@@ -78,17 +78,9 @@ Directives
   should be common to radios that will commence.
 
 
-Help!
+ATTiny
 ------------
-  For lack of elaboration of a help file, please analyze the sample files.
-  Adapt the same to the project need.
-
-
-Test
-------------
-  Development tests were done between an *Arduino UNO* and an *ATTiny85*.
-  
-  Initially the examples will be based on this configuration.
+  Core for ATTiny developed by [David A. Mellis](https://github.com/damellis/attiny)
 
 
 CSn delay, and schematic
@@ -109,7 +101,7 @@ CSn delay, and schematic
   * Use Germanium diode that gives voltage drop of 0.2V. Silicon Diode the
     minimum voltage value is 0.6V being required for the 0.3V chip.
 ```
-                                                          //
+                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
                                |           |         |   (red)
@@ -127,6 +119,19 @@ CSn delay, and schematic
 Clock
 ------------
  The library provides an automatic method to adjust the chip limit clock.
+
+
+Help!
+------------
+  For lack of elaboration of a help file, please analyze the sample files.
+  Adapt the same to the project need.
+
+
+Test
+------------
+  Development tests were done between an *Arduino UNO* and an *ATTiny85*.
+  
+  Initially the examples will be based on this configuration.
 
 
 Help me

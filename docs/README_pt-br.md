@@ -80,17 +80,9 @@ Diretivas
   comum aos rádios que irão se cominicar.
 
 
-Ajuda!
+ATTiny
 ------------
-  Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
-  exemplo. Adapte os mesmos para a necessidade do projeto.
-
-
-Teste
-------------
-  Os testes de desenvolvimento foram feitos entre um *Arduino UNO* e um *ATTiny85*.
-  
-  Inicialmente os exemplos serão baseados nesta configuração.
+  Núcleo para ATTiny desenvolvido por [David A. Mellis](https://github.com/damellis/attiny)
 
 
 Atraso CSn e esqumático
@@ -111,7 +103,7 @@ Atraso CSn e esqumático
   * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
     o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
 ```
-                                                          //
+                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
                                |           |         |   (red)
@@ -130,6 +122,19 @@ Atraso CSn e esqumático
 Clock
 ------------
   A biblioteca providencia um método automático para ajustar o clock limite do chip.
+
+
+Ajuda!
+------------
+  Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
+  exemplo. Adapte os mesmos para a necessidade do projeto.
+
+
+Teste
+------------
+  Os testes de desenvolvimento foram feitos entre um *Arduino UNO* e um *ATTiny85*.
+  
+  Inicialmente os exemplos serão baseados nesta configuração.
 
 
 Ajude-me

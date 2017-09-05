@@ -411,7 +411,7 @@
   * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
     o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
 '''
-                                                          //
+                                                           //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
                                |           |         |   (red)
