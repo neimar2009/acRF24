@@ -29,7 +29,6 @@ Diretivas
 // #define __nRF24L01P__
 
 ...
-
 ```
 
 
@@ -83,6 +82,10 @@ Diretivas
 ATTiny
 ------------
   Núcleo para ATTiny desenvolvido por [David A. Mellis](https://github.com/damellis/attiny)
+
+  Inclua o link 'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json' em: 
+
+  Preferências... -> URLs Adicionais para Gerenciamento de Placas: 
 
 
 Atraso CSn e esqumático
@@ -140,7 +143,7 @@ Teste
 Ajude-me
 ------------
   Devido a pouco tempo disponível para o desenvolvimento, apresento este projeto
-  na forma que se vê. Pesso desculpas mas até o momento foi o que consequi fazer.
+  na forma que se vê. Me desculpe, mas até o momento é o que consegui desenvolver.
   
   Meu inglês é fraco, na medida do possível, que depende de tempo disponível,
   procederei a tradução.

@@ -29,7 +29,6 @@ Directives
 // #define __nRF24L01P__
 
 ...
-
 ```
 
 `sourceID()`
@@ -82,6 +81,9 @@ ATTiny
 ------------
   Core for ATTiny developed by [David A. Mellis](https://github.com/damellis/attiny)
 
+  Include the link 'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json' in: 
+
+  Preferences... -> Additional URLs for Card Management:
 
 CSn delay, and schematic
 ------------
@@ -137,7 +139,7 @@ Test
 Help me
 ------------
   Due to the limited time available for development, I present this project in the
-  way that you see it. Personally, I'm sorry but so far I have been able to do so.
+  way that you see it. Personally, I'm sorry, but so far I've been able to develop.
   
   My English is weak, to the extent possible, depending on available time, I will
   translate.

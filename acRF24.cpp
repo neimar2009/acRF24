@@ -9,7 +9,7 @@
 
 #ifndef PIN_SPI_SCK
   #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
-    //#define PIN_SPI_SS    (4)
+    //#define PIN_SPI_SS    (3)
     #define PIN_SPI_MOSI  (6)
     #define PIN_SPI_MISO  (5)
     #define PIN_SPI_SCK   (4)
