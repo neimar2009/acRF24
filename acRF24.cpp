@@ -1,11 +1,14 @@
-// acRF24.cpp
 /*
  * Copyright (c) 2017 by Acácio Neimar de Oliveira <neimar2009@gmail.com>
- * acRF24 library.
+ * acRF24.cpp library.
 */
 
 #include <Arduino.h>
 #include "acRF24.h"
+
+char* pFile() {
+  return (__BASE_FILE__);
+};
 
 #ifndef PIN_SPI_SCK
   #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
@@ -629,7 +632,7 @@ void acRF24Class::getSufixo(uint8_t* buf) {
   memcpy(buf, pv_sufixo, 4);
 }
 
-void acRF24Class::setPayload(uint8_t* buf, uint32_t len) {
+void acRF24Class::setPayload(void* buf, uint8_t len) {
 
   // TODO: Verificar a necessidade deste 'if'.
   if (len > 32) len = 32;
@@ -639,7 +642,7 @@ void acRF24Class::setPayload(uint8_t* buf, uint32_t len) {
   payload[len] = NULL;
 }
 
-void acRF24Class::getPayload(void* buf, uint32_t len) {
+void acRF24Class::getPayload(void* buf, uint8_t len) {
   
   // TODO: Testar e verificar a necessidade deste 'if'.
   if (len > 32) len = 32;
@@ -1310,7 +1313,7 @@ void acRF24Class::clearIRQ() {
   wRegister(STATUS);
 }
 
-#ifdef TEST_VARS
+#ifdef __TEST_VARS__
 
 	// Este método é para verificação das variáveis.
 	void acRF24Class::getVars(uint8_t* sts) {
@@ -1331,13 +1334,15 @@ void acRF24Class::clearIRQ() {
 	  sts[13] = pv_targetID;
 	  sts[14] = pv_sourceID;
 	  sts[15] = pv_recAmount;
-    sts[16] = false;
     #ifdef __SE8R01__
       sts[16] = true;
+    #elif
+      sts[16] = false;
     #endif
-    sts[17] = false;
     #ifdef __nRF24L01P__
       sts[17] = true;
+    #elif
+      sts[17] = false;
     #endif
 	  // uint32_t pv_watchTX = 0;
 	  // uint32_t pv_watchTXinterval = 0;

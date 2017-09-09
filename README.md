@@ -19,15 +19,12 @@ Directives
 ------------
   The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.    
   In case of compiling to **nRF24L01+**, use the `__nRF24L01P__` directive.    
-  Go to the top of the file `acRF24.h` and change the comment as desired.
+  Go to the top of the file `acRF24directives.h` and change the comment as desired.
 
 ```
-#pragma once
-
-#define __SE8R01__        // <- Comment if you do not use
-// or
-// #define __nRF24L01P__
-
+/* Comment out the unused directive.            */
+#define __SE8R01__       // <- Comment if you do not use
+// #define __nRF24L01P__    // <- Comment if you do not use
 ...
 ```
 

@@ -19,15 +19,12 @@ Directives
   
   En cas de compilation sur **nRF24L01+**, utilisez la directive `__nRF24L01P__`.
 
-  Accédez au haut du fichier `acRF24.h` et modifiez le commentaire comme vous le souhaitez.
+  Accédez au haut du fichier `acRF24directives.h` et modifiez le commentaire comme vous le souhaitez.
 
 ```
-#pragma once
-
-#define __SE8R01__        // <- Comment if you do not use
-// or
-// #define __nRF24L01P__
-
+/* Comment out the unused directive.            */
+#define __SE8R01__       // <- Comment if you do not use
+// #define __nRF24L01P__    // <- Comment if you do not use
 ...
 ```
 

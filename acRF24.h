@@ -1,16 +1,16 @@
-// acRF24.h
 /*
  * Copyright (c) 2017 by Acácio Neimar de Oliveira <neimar2009@gmail.com>
- * acRF24 library.
+ * acRF24.h library.
  */
 
 #pragma once
 
-#define __SE8R01__        // <- Comment if you do not use
-// or
-// #define __nRF24L01P__
+#include "acRF24directives.h"
 
-// #define TEST_VARS  // <- Tirar o comentário para fazer os testes.
+#if !defined(__SE8R01__) && !defined(__nRF24L01P__)
+  #error !!! RF24 chip not set. Open the library "acRF24directives.h" and make the setting. !!!
+  // #error !!! Chip RF24 não definido. Abra a biblioteca "acRF24directives.h" e faça a definição. !!!   
+#endif
 
 #define xFF                    0xFF
 #ifdef __SE8R01__
@@ -394,39 +394,38 @@
   #define T_PECSN2OFF              220    // Tpecsn2off   220us
 
 // Atraso CSn e esqumático
-/****************************************************************************
-'''
-  T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
-          `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
+  /****************************************************************************
+  '''
+    T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
+            `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
 
-  T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
-          `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
-'''
-  Note: 
-  * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-    Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
-  * Resistor com valor muito baixo interfere no carregamento do código fonte.
-  * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
-    conectá-lo somente após a carga do código fonte, na sequência dar reset.
-  * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
-    o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-'''
-                                                           //
-                               +----|<|----x--[2k2]--x----|<|---- 5V 
-                               |    1n60   |         |    LED
-                               |           |         |   (red)
-                               |  +---||---x         |          +-----+
-                +-\/-+         |  |  100nF |         |--- CE   3| R R |
-    RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
-    NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
-    NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
-       +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
-       |        +----+            |        +------------- CSN  4| 0 0 |
-       +--------------------------x---------------------- GND  1| 1 1 |
-                                                                +-----+
-'''
-****************************************************************************/
-
+    T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
+            `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
+  '''
+    Note: 
+    * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
+      Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
+    * Resistor com valor muito baixo interfere no carregamento do código fonte.
+    * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
+      conectá-lo somente após a carga do código fonte, na sequência dar reset.
+    * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
+      o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+  '''
+                                                             //
+                                 +----|<|----x--[2k2]--x----|<|---- 5V 
+                                 |    1n60   |         |    LED
+                                 |           |         |   (red)
+                                 |  +---||---x         |          +-----+
+                  +-\/-+         |  |  100nF |         |--- CE   3| R R |
+      RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
+      NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
+      NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
+         +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
+         |        +----+            |        +------------- CSN  4| 0 0 |
+         +--------------------------x---------------------- GND  1| 1 1 |
+                                                                  +-----+
+  '''
+  ****************************************************************************/
 
 // -----------------------------------------------
 // Class RF24
@@ -522,8 +521,8 @@ public:
 //== Configurações ============================================================
   void setSufixo(uint8_t* buf);
   void getSufixo(uint8_t* buf);
-  void setPayload(uint8_t* buf, uint32_t len);  // Copia para o payload[].
-  void getPayload(void* buf, uint32_t len);     // Copia para o *buf.
+  void setPayload(void* buf, uint8_t len);   // Copia para o payload[].
+  void getPayload(void* buf, uint8_t len);      // Copia para o *buf.
   void setRFchannel(uint8_t ch);                // RF_CH      0x05
   uint8_t getRFchannel();
   void setPApower(ePA pa);                      // RF_SETUP   0x06 (PA_PWR)
@@ -572,7 +571,7 @@ public:
   #elif defined __nRF24L01P__
     uint8_t toggleFeature();          // ACTIVATE__TOGGLE_CMD
   #endif
-  #ifdef TEST_VARS
+  #ifdef __TEST_VARS__
    void getVars(uint8_t* sts); // <- Para testes.
   #endif
 protected:

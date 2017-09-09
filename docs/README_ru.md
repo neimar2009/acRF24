@@ -18,15 +18,12 @@
   
   В случае компиляции в **nRF24L01+** используйте директиву `__nRF24L01P__`.
 
-  Перейдите в начало файла `acRF24.h` и измените комментарий по своему усмотрению.
+  Перейдите в начало файла `acRF24directives.h` и измените комментарий по своему усмотрению.
 
 ```
-#pragma once
-
-#define __SE8R01__        // <- Comment if you do not use
-// or
-// #define __nRF24L01P__
-
+/* Comment out the unused directive.            */
+#define __SE8R01__       // <- Comment if you do not use
+// #define __nRF24L01P__    // <- Comment if you do not use
 ...
 ```
 
