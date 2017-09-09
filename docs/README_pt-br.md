@@ -2,9 +2,8 @@
 **Biblioteca acRF24 para se8r01 e nRF24L01+ para trabalhar com arduino e ATtiny84/85**
 
 # Índice:
-![Diretives](https://github.com/neimar2009/acRF24#directives)    
-![sourceID()](https://github.com/neimar2009/acRF24#sourceid)    
-
+[Diretives](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#diretivas)    
+[sourceID()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#sourceid)    
 
 Desenvolvimento
 ------------
