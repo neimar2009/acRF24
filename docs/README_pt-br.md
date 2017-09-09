@@ -1,6 +1,13 @@
 
 **Biblioteca acRF24 para se8r01 e nRF24L01+ para trabalhar com arduino e ATtiny84/85**
 
+# Índice:
+![Diretives](https://github.com/neimar2009/acRF24#directives)    
+![sourceID()](https://github.com/neimar2009/acRF24#sourceid)    
+
+
+Desenvolvimento
+------------
 Por não encontrar um biblioteca que suprisse minhas necessidade desenvolvi esta que apresento aqui.
 * Contém definições para uso com **nRF24L01+** (na versão 0.0.1 não está totalmente testada).
 * Baseado nos manuais:
@@ -12,6 +19,7 @@ Por não encontrar um biblioteca que suprisse minhas necessidade desenvolvi esta
 * Métodos desenvolvidos no propósito de usar o automatismo já contido no chip.
 * Desenvolvimento com o propósito de compatibilidade entre chips.
 * Possibilita até 254 rádios.
+
 
 Diretivas
 ------------
