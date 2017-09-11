@@ -6,10 +6,6 @@
 #include <Arduino.h>
 #include "acRF24.h"
 
-char* pFile() {
-  return (__BASE_FILE__);
-};
-
 #ifndef PIN_SPI_SCK
   #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
     //#define PIN_SPI_SS    (3)
@@ -88,7 +84,7 @@ void acRF24Class::begin() {
 
   // Espera até que o chip esteja ativo.
   do {
-     delayMicroseconds(T_POWERON);
+     delayMicroseconds((unsigned int)T_POWERON);
   } while(!chipActived());
 
   // TODO: Revisar, e implementar
@@ -386,7 +382,7 @@ uint8_t acRF24Class::getMode() {
 void acRF24Class::goStandby( bool RXtx) {
 
 	rRegister(CONFIG);
-	bool pd = recData[0] & CONFIG__PWR_UP == 0;
+	bool pd = (recData[0] & CONFIG__PWR_UP) == 0;
   if (RXtx) {
     recData[0] =  recData[0] | CONFIG__PWR_UP  | CONFIG__PRIM_RX;
   } else {
@@ -422,7 +418,7 @@ void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount) {
   }
   setCS(false); // or setCSn(HIGH);
 
-  buf[amount] = NULL;
+  buf[amount] = 0;
 }
 
 uint8_t acRF24Class::command(uint8_t cmd) {
@@ -601,7 +597,7 @@ uint8_t acRF24Class::internal_wTXpayload( uint8_t wTX) {
 
 //== Configurações ==========================================================
 
-void acRF24Class::setSufixo(uint8_t* buf) {
+void acRF24Class::setSufixo(const void* buf) {
 
   // for (int i = 0; i < 4; ++i) {
   //   pv_sufixo[i] = buf[i];
@@ -624,7 +620,7 @@ void acRF24Class::setSufixo(uint8_t* buf) {
   #endif
 }
 
-void acRF24Class::getSufixo(uint8_t* buf) {
+void acRF24Class::getSufixo(void* buf) {
 
   // for (int i = 0; i < 4; ++i) {
   //   buf[i] = pv_sufixo[i];
@@ -639,7 +635,7 @@ void acRF24Class::setPayload(void* buf, uint8_t len) {
   setTXpayloadWidth(len);
 
   memcpy( payload, buf, len);
-  payload[len] = NULL;
+  payload[len] = 0;
 }
 
 void acRF24Class::getPayload(void* buf, uint8_t len) {
@@ -748,8 +744,9 @@ void acRF24Class::setDataRate(eDataRate dr) {
 
   //* Aqui é feiro uma auto configuração do tempo de espera
   //* em conformidade com a largura de banda escolhida.
-  dr < 2 ? dr = 4 : dr = 6; //<- 256 * 2 = 1024uS or 256 * 6 = 1536uS  
-  setAutoRetransmissionDelay(dr);
+  uint8_t ard = (u8)dr;
+  ard < 2 ? ard = 4 : ard = 6; //<- 256 * 2 = 1024uS or 256 * 6 = 1536uS
+  setAutoRetransmissionDelay(ard);
 
 	#ifdef __SE8R01__
 	  configBank1();
@@ -769,7 +766,7 @@ eDataRate acRF24Class::getDataRate() {
   uint8_t drl = dr >> 1;
   dr = (dr & 2) | drl;
   if(dr == 3) dr = 2;   //<- Por razão de compatibilidade.
-  return dr;
+  return (eDataRate)dr;
 }
 
 //-- Configurações de modo de operação ----------------------------------------
@@ -1019,7 +1016,7 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
   }
 
   if (isStaticPayload(pipe)) {
-    rRegister(RX_PW_P0 + pipe) & RX_PW_Px__LEN;
+    rRegister(RX_PW_P0 + pipe);// & RX_PW_Px__LEN;
 	} else {
 	  if (command( R_RX_PL_WID) > 32 ){
       pv_sourceID = 0;
@@ -1032,10 +1029,10 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
 
 //== Manipulação dos rádios e canais ==========================================
 
-void acRF24Class::setRadios(uint8_t* buf) {
+void acRF24Class::setRadios(const uint8_t* buf) {
 
 	// Transfere a lista de ID de rádios para o chip.
-  uint32_t i, p = 0; // <-- short
+  uint32_t i = 0, p = 0; // <-- short
   while( p < 6 ) {
   	if (buf[i] != getSelfID() && buf[i] != 0 && buf[i] <= 254){
     	pipeReplace(buf[i], p);
@@ -1192,7 +1189,7 @@ bool acRF24Class::isFanOut() {
 // Verifica se o rádio está ativo.
 bool acRF24Class::chipActived() {
 
-  return (rRegister(SETUP_AW) & SETUP_AW__AWBYTES > 0);
+  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 0);
 }
 
 bool acRF24Class::isAvailableRX() {

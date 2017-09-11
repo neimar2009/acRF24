@@ -519,8 +519,8 @@ public:
   uint8_t flushTX();               // FLUSH_TX
   uint8_t nop();                   // NOP
 //== Configurações ============================================================
-  void setSufixo(uint8_t* buf);
-  void getSufixo(uint8_t* buf);
+  void setSufixo(const void* buf);
+  void getSufixo(void* buf);
   void setPayload(void* buf, uint8_t len);   // Copia para o payload[].
   void getPayload(void* buf, uint8_t len);      // Copia para o *buf.
   void setRFchannel(uint8_t ch);                // RF_CH      0x05
@@ -550,7 +550,7 @@ public:
   uint8_t getAutoRetransmissionDelay();
 //== Manipulação dos rádios e canais ==========================================
   // -- Rádios --------------------------------------------------------------
-  void setRadios(uint8_t* buf);
+  void setRadios(const uint8_t* buf);
   void setTXradio(uint8_t r);
   uint8_t getTXradio();
   void setTXaddr(uint8_t pipe);             // TX_ADDR    0x10
@@ -578,13 +578,13 @@ protected:
 private:
   uint32_t pv_watchTXinterval = 0;
   uint32_t pv_watchTX = 0;
-  uint8_t CS, CE, IRQ;
+  uint8_t CS = 0, CE = 0, IRQ = 0;
   uint16_t pv_flagState = MODE_STATE_CTRL;
-  uint8_t pv_lastStatus;
-  uint8_t pv_recAmount;
+  uint8_t pv_lastStatus = 0;
+  uint8_t pv_recAmount = 0;
   uint8_t pv_sufixo[4];
   uint8_t pv_txPayloadWidth = 0;
-  uint8_t pv_RFchannel;
+  uint8_t pv_RFchannel = 0;
   // -- Rádio
   uint8_t pv_selfID   = 0;
   uint8_t pv_targetID = 0;
@@ -639,6 +639,3 @@ private:
   void clearRX_DR();
   void clearIRQ();
 };
-
-// #endif
-
