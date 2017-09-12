@@ -1029,23 +1029,59 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
 
 //== Manipulação dos rádios e canais ==========================================
 
-void acRF24Class::setRadios(const uint8_t* buf) {
+void acRF24Class::setRadios(const uint8_t* buf, uint8_t c) {
 
-	// Transfere a lista de ID de rádios para o chip.
-  uint32_t i = 0, p = 0; // <-- short
-  while( p < 6 ) {
-  	if (buf[i] != getSelfID() && buf[i] != 0 && buf[i] <= 254){
-    	pipeReplace(buf[i], p);
-    	p++;
+	// Registra uma nova lista de ID de rádios.
+  uint8_t i = 0, p = 0;
+  // Exclui os rádios existentes.
+  for (i = 0; i < RADIO_AMOUNT; ++i) {
+    if (i != 1) radio[i].ID = 0;
+  }
+  pv_radioCount = 0;
+  
+  i = 0;
+  while((i < c) && (i < RADIO_AMOUNT)) {
+    // Exclui selfID, radio 0 e 254 acima
+  	if ((buf[i] != getSelfID()) && (hasRadio(buf[i]) == RADIO_AMOUNT) && (buf[i] != 0) && (buf[i] < 0xFF)){
+      setRadioID(p, buf[i]);
+    	p++;// <- Salta para o próximo pipe.
+      // pv_radioCount++; // Atualiza a indicação de quantidade de rádios.
     }
   	i++;
-  	if (p == 1) p++;
+  	if (p == 1) p++;// <- Salta o pipe do selfID.
   }
-  // Registra o restante de rádios para uso futuro.
-  while(i < RADIO_AMOUNT) {
-  	setRadioID(i, buf[i]);
-  	i++;
+}
+
+void acRF24Class::getRadios(uint8_t* buf, uint8_t c) {
+  
+  uint8_t i = 0;
+  uint8_t r = 0;
+  while( i < c && i < RADIO_AMOUNT) {
+    if ((i != 1) && (radio[r].ID !=0)) {
+      buf[i] = getRadio(r);
+      i++;
+    }
+    r++;
   }
+}
+
+uint8_t acRF24Class::getRadio(uint8_t i) {
+
+  if (i < pv_radioCount) {
+    if (i > 0) i++; // <- Ignora selfID.
+    // Ignora as identificações 0 (zero).
+    while (i < RADIO_AMOUNT && radio[i].ID == 0) i++;
+    return radio[i].ID;
+  }
+  return 0;
+}
+
+uint8_t acRF24Class::radioCount() {
+
+  // uint8_t c = 0;
+  // while (c < RADIO_AMOUNT && radio[c].ID != 0) c++;
+  // return c;
+  return pv_radioCount;
 }
 
 void acRF24Class::setTXradio(uint8_t r) {
@@ -1082,7 +1118,9 @@ uint8_t acRF24Class::getTXaddr() {
 
 void acRF24Class::setRadioID(u8 p, u8 id) {
 
+  // Não salvaguarda o rádio da posição 'p'.
   radio[p].ID = id;
+  pv_radioCount++; // Atualiza a indicação de quantidade de rádios.
   // Sincroniza os rádio rádio com o devido pipe.
   if (p < 6) {
     if(p == 0 ) {
@@ -1116,10 +1154,10 @@ void acRF24Class::radioExchange(uint8_t r, uint8_t p) {
 
   // r: rádio; p: pipe.
   // O pipe 1 é reservado para o rádio base.
-  if ((p == 1) || (r == getRadioID(p))) return;
+  if ((r == getRadioID(p)) || (p == 1)) return;
   // Procede a troca.
-  uint8_t p_out = hasRadio(r); // Pipe que vai receber 'r_out'.
-  uint8_t r_out = getRadioID(p); // Rádio que vai sair.
+  uint8_t p_out = hasRadio(r);   // Posição para onde vai o rádio contido em 'p'.
+  uint8_t r_out = getRadioID(p); // Rádio que está em 'p'.
   
   setRadioID(p, r);       	// <--
   setRadioID(p_out, r_out); // -->
@@ -1137,7 +1175,9 @@ uint8_t acRF24Class::hasRadio(uint8_t r) {
   // Retorna posição do rádio ou 'radioAmount' se não houver.
   uint8_t i = 0;
   for (i = 0; i < RADIO_AMOUNT; ++i) {
-    if (getRadioID(i) == r) break;
+    if ((r != pv_selfID) && (r != 0)) {
+      if (getRadioID(i) == r) break;
+    }
   }
   return i;
 }
@@ -1145,10 +1185,11 @@ uint8_t acRF24Class::hasRadio(uint8_t r) {
 uint8_t acRF24Class::deleteRadio(uint8_t r) {
 
   // Retorna a posição do rádio excluido.
-  // Retorna radio amount se rádio não encontrado.
+  // Retorna radio 'RADIO_AMOUNT' se rádio não encontrado.
   uint8_t p = hasRadio(r);
   if (p < RADIO_AMOUNT && p != 1) {
     setRadioID(p, 0);
+    pv_radioCount--; // Atualiza a indicação de quantidade de rádios.
     return p;
   }
   return RADIO_AMOUNT;

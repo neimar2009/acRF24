@@ -5,7 +5,9 @@
 
 #pragma once
 
-#include "acRF24directives.h"
+// #include "acRF24directives.h"
+
+#define __SE8R01__
 
 #if !defined(__SE8R01__) && !defined(__nRF24L01P__)
   #error !!! RF24 chip not set. Open the library "acRF24directives.h" and make the setting. !!!
@@ -550,7 +552,10 @@ public:
   uint8_t getAutoRetransmissionDelay();
 //== Manipulação dos rádios e canais ==========================================
   // -- Rádios --------------------------------------------------------------
-  void setRadios(const uint8_t* buf);
+  void setRadios(const uint8_t* buf, uint8_t c);
+  void getRadios(uint8_t* buf, uint8_t);
+  uint8_t getRadio(uint8_t i);
+  uint8_t radioCount();
   void setTXradio(uint8_t r);
   uint8_t getTXradio();
   void setTXaddr(uint8_t pipe);             // TX_ADDR    0x10
@@ -589,6 +594,7 @@ private:
   uint8_t pv_selfID   = 0;
   uint8_t pv_targetID = 0;
   uint8_t pv_sourceID = 0;
+  uint8_t pv_radioCount = 5; // default - 1
   sRadio radio[RADIO_AMOUNT];
 //== Inicialização ============================================================
   void resetConfig();
