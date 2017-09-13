@@ -1038,14 +1038,13 @@ void acRF24Class::setRadios(const uint8_t* buf, uint8_t c) {
     if (i != 1) radio[i].ID = 0;
   }
   pv_radioCount = 0;
-  
+
   i = 0;
   while((i < c) && (i < RADIO_AMOUNT)) {
     // Exclui selfID, radio 0 e 254 acima
   	if ((buf[i] != getSelfID()) && (hasRadio(buf[i]) == RADIO_AMOUNT) && (buf[i] != 0) && (buf[i] < 0xFF)){
       setRadioID(p, buf[i]);
     	p++;// <- Salta para o próximo pipe.
-      // pv_radioCount++; // Atualiza a indicação de quantidade de rádios.
     }
   	i++;
   	if (p == 1) p++;// <- Salta o pipe do selfID.
@@ -1067,7 +1066,7 @@ void acRF24Class::getRadios(uint8_t* buf, uint8_t c) {
 
 uint8_t acRF24Class::getRadio(uint8_t i) {
 
-  if (i < pv_radioCount) {
+  if (i < radioCount()) {
     if (i > 0) i++; // <- Ignora selfID.
     // Ignora as identificações 0 (zero).
     while (i < RADIO_AMOUNT && radio[i].ID == 0) i++;
@@ -1078,9 +1077,6 @@ uint8_t acRF24Class::getRadio(uint8_t i) {
 
 uint8_t acRF24Class::radioCount() {
 
-  // uint8_t c = 0;
-  // while (c < RADIO_AMOUNT && radio[c].ID != 0) c++;
-  // return c;
   return pv_radioCount;
 }
 
@@ -1281,7 +1277,7 @@ uint8_t acRF24Class::getSelfID() {
 
 uint8_t acRF24Class::staticTXpayloadWidth() {
 
-  return rRegister(RX_PW_P0); // <- Tamanho dinâmico.
+  return rRegister(RX_PW_P0); // <- Tamanho estático.
 }
 
 //-- Pré configuração
@@ -1305,6 +1301,18 @@ uint8_t acRF24Class::staticTXpayloadWidth() {
 #endif
 
 //== Privados
+
+bool acRF24Class::activedCS() {
+  return CS != 0xFF;
+}
+
+bool acRF24Class::activedCE() {
+  return CE != 0xFF;
+}
+
+bool acRF24Class::activedIRQ() {
+  return IRQ != 0xFF;
+}
 
 bool acRF24Class::flagState(uint16_t f) {
 
@@ -1374,12 +1382,12 @@ void acRF24Class::clearIRQ() {
 	  sts[15] = pv_recAmount;
     #ifdef __SE8R01__
       sts[16] = true;
-    #elif
+    #else
       sts[16] = false;
     #endif
     #ifdef __nRF24L01P__
       sts[17] = true;
-    #elif
+    #else
       sts[17] = false;
     #endif
 	  // uint32_t pv_watchTX = 0;

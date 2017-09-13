@@ -5,9 +5,7 @@
 
 #pragma once
 
-// #include "acRF24directives.h"
-
-#define __SE8R01__
+#include "acRF24directives.h"
 
 #if !defined(__SE8R01__) && !defined(__nRF24L01P__)
   #error !!! RF24 chip not set. Open the library "acRF24directives.h" and make the setting. !!!
@@ -450,6 +448,7 @@
   #define ACTIVED_IRQ       0x0020
   #define ENABLED           0x0040
   #define SELECTED          0X0080
+
   #define MODE_DYN_ACK      0x0100
   #define MODE_DPL          0X0200
   #define MODE_ACK_PAY      0X0400
@@ -637,6 +636,9 @@ private:
   // -- Fan-out ---------------------------------------------------------------
   bool isFanOut();
 //== Comandos para fins de suporte ============================================
+  bool activedCS();
+  bool activedCE();
+  bool activedIRQ();
   bool flagState(uint16_t f);
   void flagState(uint16_t f, bool e);
   void setFlagStateCtrl(uint16_t f);
