@@ -2,13 +2,18 @@
 **Biblioteca acRF24 para se8r01 e nRF24L01+ para trabalhar com arduino e ATtiny84/85**
 
 # Índice:
-[Diretives](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#diretivas)    
-[sourceID()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#sourceid)    
-[watchTX()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#watchtx)    
-[enableFanOut()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#enablefanout)    
-[ATTiny](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#attiny)    
-[Clock](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#clock)    
-
+- [Desenvolvimento](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#desenvolvimento)
+- [Diretives](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#diretivas)    
+- [sourceID()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#sourceid)    
+- [watchTX()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#watchtx)    
+- [enableFanOut()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#enablefanout)    
+- [ATTiny](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#attiny)    
+- [Atraso CSn e esqumático](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#atraso-csn-e-esqumático)    
+- [Clock](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#clock)    
+- [Ajuda!](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#ajuda)
+- [Teste](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#teste)
+- [Ajude-me](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#ajude-me)
+- [Agradecimentos](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#agradecimentos)
 
 Desenvolvimento
 ------------
