@@ -4,6 +4,11 @@
 # Índice:
 [Diretives](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#diretivas)    
 [sourceID()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#sourceid)    
+[watchTX()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#watchtx)    
+[enableFanOut()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#enablefanout)    
+[ATTiny](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#attiny)    
+[Clock](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#clock)    
+
 
 Desenvolvimento
 ------------
@@ -55,6 +60,7 @@ Diretivas
   configuração base de 12 rádios. Em havendo a necessidade de um número maior,
   então alterar em `acRF24directives.h`:
 
+```
 /************************************************************/
 /*      Number of radios (Change to desired quantity).      */
 /*                                                          */
@@ -95,12 +101,12 @@ ATTiny
 
 Atraso CSn e esqumático
 ------------
-'''    
+```   
   #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
                               // Resistência externa escolhida  : 2200Ω
                               // Capacitor escolhido por padrão : 100nF
                               // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us standby time.
-'''
+```
   Note: 
   * Ao alterar o valor do resistor, ajuste o valor da diretiva T_PECSN2OFF
     em "acRF24direcrives.h". Sem este ajuste o sistema pode não funcionar,
@@ -114,7 +120,7 @@ Atraso CSn e esqumático
     conectá-lo somente após a carga do código fonte, na sequência dar reset.
   * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
     o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-'''
+```
                                                            //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
@@ -128,7 +134,7 @@ Atraso CSn e esqumático
        |        +----+            |        +------------- CSN  4| 0 0 |
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
-'''
+```
 
 
 Clock
