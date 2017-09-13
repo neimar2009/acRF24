@@ -22,10 +22,13 @@ Directives
   Go to the top of the file `acRF24directives.h` and change the comment as desired.
 
 ```
-/* Comment out the unused directive.            */
+/************************************************************/
+/*           Comment out the unused directive.              */
+/*                                                          */
 #define __SE8R01__       // <- Comment if you do not use
 // #define __nRF24L01P__    // <- Comment if you do not use
-...
+/*                                                          */
+/************************************************************/
 ```
 
 `sourceID()`
@@ -45,24 +48,23 @@ Directives
   number, then change to `acRF24.h`:
 
 ```
-...
-
-// Number of radios (Change to desired quantity).
-#define RADIO_AMOUNT          12
-
-// flag state
-...
+/************************************************************/
+/*      Number of radios (Change to desired quantity).      */
+/*                                                          */
+#define RADIO_AMOUNT        12
+/*                                                          */
+/************************************************************/
 ```
   Replace 12 with the desired amount. Observe the limit of *254*.
 
 
 `watchTX()`
 ------------
-  When the radio receiver falls for a long period of time, * ACK * does not
+  When the radio receiver falls for a long period of time, *ACK* does not
   return causing the transmitter to become inoperative.
   
   `watchTX()` sets the time in milliseconds that the transmitter will wait
-  for the * ACK * response, while waiting is called `reuseTXpayload()`, after
+  for the *ACK* response, while waiting is called `reuseTXpayload()`, after
   this time `flushTX()` is called and thus releasing the transmitter to
   operate with others radios
 
@@ -85,15 +87,19 @@ ATTiny
 CSn delay, and schematic
 ------------
 ```
-  T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
-          `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
-
-  T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
-          `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
+  #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
+                              // External resistance chosen   : 2200Ω
+                              // Capacitor chosen by default  : 100nF
+                              // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us standby time.
 ```
   Note: 
-  * When changing the value of the resistor, also change the value of the `T_PECSN2OFF` directive.    
-    Without this adjustment the system may not work, or operate with weakness.
+  * When changing the resistor value, set the value of the T_PECSN2OFF directive
+    to "acRF24direcrives.h". Without this adjustment the system may not work, or
+    operate with weakness.
+  * It is not foreseen to change the value of the capacitor, the adjustment is
+    only given by the change of the resistor. If this value is changed, also
+    consider the need to adjust T\_PECSN2ON. Values less than 5 for T_PECSN2ON
+    causes inconsistency or inoperability in the system. Please report the result.
   * Resistor with very low value interferes with loading the source code.
   * Value of 1kΩ was tested and worked well. However it is necessary to connect
     it only after loading the source code, in the sequence reset.

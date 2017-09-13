@@ -379,32 +379,38 @@
 //-- RF24 delay --
 
   #define SPI_RF24_LIMIT    10000000UL
-  #define T_POWERON             100000    // Tpoweron     100ms
+  #define T_POWERON             100000  // Tpoweron     100ms
   #if defined __SE8R01__
-    #define T_PD2STBY             2000    // Tpd2stby       2ms
-    #define T_STBY2A               210    // Tstby2a      250us
+    #define T_PD2STBY             2000  // Tpd2stby       2ms
+    #define T_STBY2A               210  // Tstby2a      250us
   #elif defined __nRF24L01P__
-    #define T_PD2STBY             1500    // Tpd2stby     1.5ms
-    #define T_STBY2A               130    // Tstby2a      130us
+    #define T_PD2STBY             1500  // Tpd2stby     1.5ms
+    #define T_STBY2A               130  // Tstby2a      130us
   #endif
-  #define T_DELAY_AGC               20    // Tdelay_AGC    20us
-  #define T_HCE                     10    // Thce          10us
-  #define T_PECE2CSN                 4    // Tpece2csn      4us
-  #define T_PECSN2ON                 5    // Tpecsn2on      5us
-  #define T_PECSN2OFF              220    // Tpecsn2off   220us
-
+  #define T_DELAY_AGC               20  // Tdelay_AGC    20us
+  #define T_HCE                     10  // Thce          10us
+  #define T_PECE2CSN                 4  // Tpece2csn      4us
+  #define T_PECSN2ON                 5  // Capacitance in pF, time in milliseconds.
+                                        // resistência interna estimada   : 50Ω
+                                        // capacitor escolhido por padrão : 100nF
+                                        // 50Ω x 0.0000001uF = 0.000005s  ->  5us standby Time.
+  
 // Atraso CSn e esqumático
   /****************************************************************************
+  '''    
+    #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
+                                // Resistência externa escolhida  : 2200Ω
+                                // Capacitor escolhido por padrão : 100nF
+                                // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us standby time.
   '''
-    T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
-            `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
-
-    T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
-            `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
-  '''
-    Note: 
-    * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-      Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
+    Nota: 
+    * Ao alterar o valor do resistor, ajuste o valor da diretiva T_PECSN2OFF
+      em "acRF24direcrives.h". Sem este ajuste o sistema pode não funcionar,
+      ou funcionar com debilidade.    
+    * Não é previsto a alteração do valor do capacitor, o ajuste é dado apenas pela
+      alteração do resistor. Em caso de alteração deste valor, considere também a 
+      necessidade de ajustar T_PECSN2ON. Valores menor que 5 para T_PECSN2ON provoca
+      inconsistência ou inoperância no sistem. Favor reportar o resultado.
     * Resistor com valor muito baixo interfere no carregamento do código fonte.
     * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
       conectá-lo somente após a carga do código fonte, na sequência dar reset.
@@ -431,8 +437,8 @@
 // Class RF24
 // -----------------------------------------------
 
-// Number of radios (Change to desired quantity).
-#define RADIO_AMOUNT          12
+// // Number of radios (Change to desired quantity).
+// #define RADIO_AMOUNT        12
 
 // flag state
   #define MODE_STATE_CTRL   0x0007
@@ -443,20 +449,20 @@
   #define _MODE__STANDBYTX  0x0004
   #define _MODE__INVALID_5  0x0005
   #define _MODE__INVALID_7  0x0006
-  #define ACTIVED_CE        0x0008
-  #define ACTIVED_CS        0X0010
-  #define ACTIVED_IRQ       0x0020
-  #define ENABLED           0x0040
-  #define SELECTED          0X0080
+  #define ENABLED           0x0008
+  #define SELECTED          0X0010 /*
+  #define STATE_UNUSED_05   0x0020
+  #define STATE_UNUSED_06   0x0040
+  #define STATE_UNUSED_07   0x0080 */
 
   #define MODE_DYN_ACK      0x0100
   #define MODE_DPL          0X0200
   #define MODE_ACK_PAY      0X0400
-  #define MODE_FAN_OUT      0X0800
-  // #define MODE_UNDEFINED_5  0x1000
-  // #define MODE_UNDEFINED_6  0x2000
-  // #define MODE_UNDEFINED_7  0x4000
-  // #define MODE_UNDEFINED_8  0x8000
+  #define MODE_FAN_OUT      0X0800 /*
+  #define STATE_UNUSED_12   0x1000
+  #define STATE_UNUSED_13   0x2000
+  #define STATE_UNUSED_14   0x4000
+  #define STATE_UNUSED_15   0x8000 */
 
 #define RX HIGH
 #define TX LOW
@@ -493,7 +499,8 @@ public:
   uint8_t payload[32];
   uint8_t recData[5];
 //== Inicialização ============================================================
-  acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF);
+  acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
+    pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {};
   ~acRF24Class(){};
   void begin();
 //== Controle do chip =========================================================
@@ -636,13 +643,13 @@ private:
   // -- Fan-out ---------------------------------------------------------------
   bool isFanOut();
 //== Comandos para fins de suporte ============================================
-  bool activedCS();
-  bool activedCE();
-  bool activedIRQ();
-  bool flagState(uint16_t f);
-  void flagState(uint16_t f, bool e);
-  void setFlagStateCtrl(uint16_t f);
-  bool flagStateCtrl(uint16_t f);
+  bool activeCS();
+  bool activeCE();
+  bool activeIRQ();
+  bool flag(uint16_t f);
+  void flag(uint16_t f, bool e);
+  void setFlagMode(uint16_t f);
+  bool getFlagMode(uint16_t f);
   void clearTX_DS();
   void clearRX_DR();
   void clearIRQ();

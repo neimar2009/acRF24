@@ -22,10 +22,13 @@ Directives
   Accédez au haut du fichier `acRF24directives.h` et modifiez le commentaire comme vous le souhaitez.
 
 ```
-/* Comment out the unused directive.            */
+/************************************************************/
+/*           Comment out the unused directive.              */
+/*                                                          */
 #define __SE8R01__       // <- Comment if you do not use
 // #define __nRF24L01P__    // <- Comment if you do not use
-...
+/*                                                          */
+/************************************************************/
 ```
 
 
@@ -38,16 +41,15 @@ Directives
   – Radio ID 255 indique l'en-tête, sera ignoré.    
   Quantité: 256 - (neutre + en-tête) = *254*.
   
-  Pour de nombreuses radios, il existe une utilisation expressive de la mémoire, pour cette raison, une configuration de base de 12 radios a été choisie. Si un nombre plus grand est nécessaire, passez à `acRF24.h`:
+  Pour de nombreuses radios, il existe une utilisation expressive de la mémoire, pour cette raison, une configuration de base de 12 radios a été choisie. Si un nombre plus grand est nécessaire, passez à `acRF24directives.h`:
 
 ```
-...
-
-// Number of radios (Change to desired quantity).
-#define RADIO_AMOUNT          12
-
-// flag state
-...
+/************************************************************/
+/*      Number of radios (Change to desired quantity).      */
+/*                                                          */
+#define RADIO_AMOUNT        12
+/*                                                          */
+/************************************************************/
 ```
 
   Remplacez 12 par le montant désiré. Observez la limite de *254*.
@@ -75,16 +77,20 @@ ATTiny
 
 CSn delay, et schématique
 ------------
-```  
-T_PECSN2ON  = 50 * 0.1;          // <- Capacitance en pF, temps en millisecondes.
-        `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; temps de conduite.
-
-T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance en pF, temps en millisecondes.
-        `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; temps de conduite.
+```
+  #define T_PECSN2OFF     220 // Capacitance en pF, temps en millisecondes.
+                              // Résistance externe choisie     : 2200Ω
+                              // Capacitor choisi par défaut    : 100nF
+                              // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us temps de veille.
 ```  
   Remarque:
-  * Lorsque vous changez la valeur de la résistance, modifiez également la valeur de la directive `T_PECSN2OFF`.
-  Sans cet ajustement, le système peut ne pas fonctionner ou fonctionner avec une faiblesse.
+  * Lorsque vous modifiez la valeur de la résistance, réglez la valeur de la directive
+    T_PECSN2OFF sur "acRF24direcrives.h". Sans cet ajustement, le système peut ne pas 
+    fonctionner ou fonctionner avec une faiblesse.
+  * Il n'est pas prévu de modifier la valeur du condensateur, le réglage n'est donné que par 
+    la modification de la résistance. Si cette valeur est modifiée, considérez également
+    la nécessité d'ajuster T \ _PECSN2ON. Les valeurs inférieures à 5 pour T_PECSN2ON
+    entraînent une incohérence ou une inopérabilité dans le système. Veuillez signaler le résultat.
   * La résistance à très faible valeur interfère avec le chargement du code source.
   * La valeur de 1kΩ a été testée et fonctionne bien. Cependant, il est nécessaire de le connecter uniquement après le chargement du code source, dans la réinitialisation de la séquence.
   * Utilisez une diode de germanium qui donne une chute de tension de 0,2 V. Diode de silicium La valeur de tension minimale est de 0.6V pour la puce de 0.3V.
@@ -102,7 +108,6 @@ T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance en pF, temps en millisecondes
        |        +----+            |        +------------- CSN  4| 0 0 |
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
-
 ```
 
 

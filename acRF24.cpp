@@ -48,13 +48,9 @@ uint8_t SPI_transfer(uint8_t data) {
 
 //== Inicialização ==========================================================
 
-acRF24Class::acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
-  pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
-  // --  
-  flagState(ACTIVED_CS, CSpin != xFF);
-  flagState(ACTIVED_CE, CEpin != xFF);
-  flagState(ACTIVED_IRQ, IRQpin != xFF);
-}
+// acRF24Class::acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
+//   pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
+// }
 
 void acRF24Class::begin() {
 
@@ -65,22 +61,22 @@ void acRF24Class::begin() {
   digitalWrite(SCK, LOW);
   digitalWrite(MOSI, LOW);
   //
-  if (flagState(ACTIVED_CS)) {
+  if (activeCS()) {
     pinMode(CS, OUTPUT);
     digitalWrite(CS, HIGH);
-    flagState(SELECTED, false);
+    flag(SELECTED, false);
   } else {
 	  setCS(false);
 	}
   //
-  if(flagState(ACTIVED_CE)) {
+  if(activeCE()) {
     pinMode(CE, OUTPUT);
     digitalWrite(CE, LOW);
   } else {
-    flagState(ENABLED, true);
+    flag(ENABLED, true);
   }
   //
-  if (flagState(ACTIVED_IRQ)) pinMode(IRQ, INPUT);
+  if (activeIRQ()) pinMode(IRQ, INPUT);
 
   // Espera até que o chip esteja ativo.
   do {
@@ -269,22 +265,22 @@ void acRF24Class::resetConfig() {
 
 void acRF24Class::setCE( bool enable) {
 
-  if (flagState(ACTIVED_CE)) {
-    if (flagState(ENABLED) == enable) return;
+  if (activeCE()) {
+    if (flag(ENABLED) == enable) return;
     digitalWrite(CE, enable);
-    flagState(ENABLED, enable);
+    flag(ENABLED, enable);
   }
   if (enable) delayMicroseconds(T_STBY2A);
 }
 
 void acRF24Class::setCS( bool select) {
 
-  if (flagState(SELECTED) == select) return;
-  flagState(SELECTED, select);
+  if (flag(SELECTED) == select) return;
+  flag(SELECTED, select);
 
   select = !select; // Select with negative.
 
-  if (flagState(ACTIVED_CS)) {
+  if (activeCS()) {
     digitalWrite(CS, select);
     if (!select) delayMicroseconds(T_PECE2CSN);
   } else {
@@ -300,8 +296,8 @@ void acRF24Class::setCSn( bool selectn) {
 
 void acRF24Class::setPowerDown() {
 
-  if (flagStateCtrl(_MODE__POWERDOWN)) return;
-  setFlagStateCtrl(_MODE__POWERDOWN);
+  if (getFlagMode(_MODE__POWERDOWN)) return;
+  setFlagMode(_MODE__POWERDOWN);
 
   rRegister(CONFIG);
   recData[0] &= ~CONFIG__PWR_UP;
@@ -312,8 +308,8 @@ void acRF24Class::setPowerDown() {
 // Força a entrar no estado de standby-I
 void acRF24Class::setStandbyRX() {
   
-  if (flagStateCtrl(_MODE__STANDBYRX)) return;
-  setFlagStateCtrl(_MODE__STANDBYRX);
+  if (getFlagMode(_MODE__STANDBYRX)) return;
+  setFlagMode(_MODE__STANDBYRX);
 
   goStandby(RX);
   setCE(LOW);
@@ -322,8 +318,8 @@ void acRF24Class::setStandbyRX() {
 // Força a entrar no estado de standby-II
 void acRF24Class::setStandbyTX() {
 
-  if (flagStateCtrl(_MODE__STANDBYTX)) return;
-  setFlagStateCtrl(_MODE__STANDBYTX);
+  if (getFlagMode(_MODE__STANDBYTX)) return;
+  setFlagMode(_MODE__STANDBYTX);
 
   goStandby(TX);
   flushTX();
@@ -332,8 +328,8 @@ void acRF24Class::setStandbyTX() {
 
 void acRF24Class::setModeRX() {
 
-  if (flagStateCtrl(_MODE__MODERX)) return;
-  setFlagStateCtrl(_MODE__MODERX);
+  if (getFlagMode(_MODE__MODERX)) return;
+  setFlagMode(_MODE__MODERX);
 
   goStandby(RX);
   setCE(HIGH);
@@ -341,8 +337,8 @@ void acRF24Class::setModeRX() {
 
 void acRF24Class::setModeTX() {
   
-  if (flagStateCtrl(_MODE__MODETX)) return;
-  setFlagStateCtrl(_MODE__MODETX);
+  if (getFlagMode(_MODE__MODETX)) return;
+  setFlagMode(_MODE__MODETX);
 
   goStandby(TX);
   setCE(HIGH);
@@ -350,30 +346,30 @@ void acRF24Class::setModeTX() {
 
 uint8_t acRF24Class::getMode() {
 
-	if (flagState(MODE_STATE_CTRL)) return MODE_STATE_CTRL; // <- Indefinido.
+	if (flag(MODE_STATE_CTRL)) return MODE_STATE_CTRL; // <- Indefinido.
   uint8_t rec = rRegister(CONFIG);
   // Mode: power_down
   if(!(rec & CONFIG__PWR_UP)) {
-    setFlagStateCtrl(_MODE__POWERDOWN);
+    setFlagMode(_MODE__POWERDOWN);
     return _MODE__POWERDOWN;
   }
   // Mode: standby-I -> StandbyRX
-  if (!flagState(ENABLED)) {
-    setFlagStateCtrl(_MODE__STANDBYRX);
+  if (!flag(ENABLED)) {
+    setFlagMode(_MODE__STANDBYRX);
     return _MODE__STANDBYRX;
   }
   // Mode: modeRX
   if(rec & CONFIG__PRIM_RX) {
-    setFlagStateCtrl(_MODE__MODERX);
+    setFlagMode(_MODE__MODERX);
     return _MODE__MODERX;
   }
   // Mode: standby-II -> StandbyTX
   if((rRegister( FIFO_STATUS) & FIFO_STATUS__TX_EMPTY) == FIFO_STATUS__TX_EMPTY) {
-    setFlagStateCtrl(_MODE__STANDBYTX);
+    setFlagMode(_MODE__STANDBYTX);
     return _MODE__STANDBYTX;    
   }
   // Mode: modeTX
-  setFlagStateCtrl(_MODE__MODETX);
+  setFlagMode(_MODE__MODETX);
   return _MODE__MODETX;
 }
 
@@ -402,7 +398,7 @@ void acRF24Class::goMode(uint8_t m) {
     case _MODE__MODETX    : setModeTX();    break;
     case _MODE__STANDBYTX : setStandbyTX(); break;
     default: 
-      setFlagStateCtrl(MODE_STATE_CTRL);
+      setFlagMode(MODE_STATE_CTRL);
     break;
   }
 }
@@ -927,24 +923,24 @@ void acRF24Class::enablePipe(uint8_t pipe, bool en) {
 
 void acRF24Class::enableDYN_ACK(bool en) {
 
-  if (flagState(MODE_DYN_ACK) == en) return;
+  if (flag(MODE_DYN_ACK) == en) return;
 
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_DYN_ACK)
      : recData[0] &= ~(FEATURE__EN_DYN_ACK);
   wRegister(FEATURE);
 
-  flagState(MODE_DYN_ACK, en);
+  flag(MODE_DYN_ACK, en);
 }
 
 bool acRF24Class::isDYN_ACK() {
 
-  return flagState(MODE_DYN_ACK);
+  return flag(MODE_DYN_ACK);
 }
 
 void acRF24Class::enableDPL(bool en) {
 
-  if (flagState(MODE_DPL) == en) return;
+  if (flag(MODE_DPL) == en) return;
   
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_DPL) 
@@ -952,29 +948,29 @@ void acRF24Class::enableDPL(bool en) {
   wRegister(FEATURE);
 
   // Atualiza o 'state'
-  flagState(MODE_DPL, en);
+  flag(MODE_DPL, en);
 }
 
 bool acRF24Class::isDPL() {
 
-  return flagState(MODE_DPL);
+  return flag(MODE_DPL);
 }
 
 void acRF24Class::enableACK_PAY(bool en) {
 
-  if (flagState(MODE_ACK_PAY) == en) return;
+  if (flag(MODE_ACK_PAY) == en) return;
   
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_ACK_PAY) 
      : recData[0] &= ~(FEATURE__EN_ACK_PAY);
   wRegister(FEATURE);
 
-  flagState(MODE_ACK_PAY, en);
+  flag(MODE_ACK_PAY, en);
 }
 
 bool acRF24Class::isACK_PAY() {
 
-  return flagState(MODE_ACK_PAY);
+  return flag(MODE_ACK_PAY);
 }
 
 // Registra o tamanho do payload a ser enviado.
@@ -1197,7 +1193,7 @@ void acRF24Class::enableFanOut(bool en) {
 
   // TODO: Ativar fan-out apenas para o rádio configurado para tal.
   //       Enable fan-out only for the radio configured for this
-  if (flagState(MODE_FAN_OUT) == en) return;
+  if (flag(MODE_FAN_OUT) == en) return;
 
 	for (int i = 0; i < 6; ++i) {
 		rRegister(RX_PW_P0 + i);
@@ -1208,7 +1204,7 @@ void acRF24Class::enableFanOut(bool en) {
     }
 	} 		
 
-  flagState(MODE_FAN_OUT, en);
+  flag(MODE_FAN_OUT, en);
 }
 
 uint8_t acRF24Class::sourceID() {
@@ -1218,7 +1214,7 @@ uint8_t acRF24Class::sourceID() {
 
 bool acRF24Class::isFanOut() {
 
-  return flagState(MODE_FAN_OUT);
+  return flag(MODE_FAN_OUT);
 }
 
 //== Comandos para fins de suporte ==========================================
@@ -1302,36 +1298,36 @@ uint8_t acRF24Class::staticTXpayloadWidth() {
 
 //== Privados
 
-bool acRF24Class::activedCS() {
+bool acRF24Class::activeCS() {
   return CS != 0xFF;
 }
 
-bool acRF24Class::activedCE() {
+bool acRF24Class::activeCE() {
   return CE != 0xFF;
 }
 
-bool acRF24Class::activedIRQ() {
+bool acRF24Class::activeIRQ() {
   return IRQ != 0xFF;
 }
 
-bool acRF24Class::flagState(uint16_t f) {
+bool acRF24Class::flag(uint16_t f) {
 
   return ((pv_flagState & f) == f);
 }
 
-void acRF24Class::flagState(uint16_t f, bool e) {
+void acRF24Class::flag(uint16_t f, bool e) {
 
   (e) ? (pv_flagState |= f)
       : (pv_flagState &= ~f);
 }
 
-void acRF24Class::setFlagStateCtrl(uint16_t f) {
+void acRF24Class::setFlagMode(uint16_t f) {
 
   pv_flagState &= ~MODE_STATE_CTRL;
   pv_flagState |= f;
 }
 
-bool acRF24Class::flagStateCtrl(uint16_t f) {
+bool acRF24Class::getFlagMode(uint16_t f) {
 
   return ((pv_flagState & MODE_STATE_CTRL) == f);
 }
