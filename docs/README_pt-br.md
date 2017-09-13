@@ -29,10 +29,13 @@ Diretivas
   Vá ao topo do arquivo `acRF24directives.h` e altere o comentário como desejado.
 
 ```
-/* Comment out the unused directive.            */
+/************************************************************/
+/*           Comment out the unused directive.              */
+/*                                                          */
 #define __SE8R01__       // <- Comment if you do not use
 // #define __nRF24L01P__    // <- Comment if you do not use
-...
+/*                                                          */
+/************************************************************/
 ```
 
 
@@ -50,16 +53,14 @@ Diretivas
   
   Para muitos rádios há um expressivo uso de memória, por este motivo foi escolhido uma
   configuração base de 12 rádios. Em havendo a necessidade de um número maior,
-  então alterar em `acRF24.h`:
+  então alterar em `acRF24directives.h`:
 
-```
-...
-
-// Number of radios (Change to desired quantity).
-#define RADIO_AMOUNT          12
-
-// flag state
-...
+/************************************************************/
+/*      Number of radios (Change to desired quantity).      */
+/*                                                          */
+#define RADIO_AMOUNT        12
+/*                                                          */
+/************************************************************/
 ```
 
   Substituir 12 pela quantidade desejada. Observe o limite de *254*.
@@ -94,22 +95,26 @@ ATTiny
 
 Atraso CSn e esqumático
 ------------
-```
-  T_PECSN2ON  = 50 * 0.1;          // <- Capacitance in pF, time in milliseconds.
-          `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; drive time.
-
-  T_PECSN2OFF = 2200 * 0.1;        // <- Capacitance in pF, time in milliseconds.
-          `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; drive time.
-```
+'''    
+  #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
+                              // Resistência externa escolhida  : 2200Ω
+                              // Capacitor escolhido por padrão : 100nF
+                              // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us standby time.
+'''
   Note: 
-  * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-    Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
+  * Ao alterar o valor do resistor, ajuste o valor da diretiva T_PECSN2OFF
+    em "acRF24direcrives.h". Sem este ajuste o sistema pode não funcionar,
+    ou funcionar com debilidade.    
+  * Não é previsto a alteração do valor do capacitor, o ajuste é dado apenas pela
+    alteração do resistor. Em caso de alteração deste valor, considere também a 
+    necessidade de ajustar T\_PECSN2ON. Valores menor que 5 para T_PECSN2ON provoca
+    inconsistência ou inoperância no sistem. Favor reportar o resultado.
   * Resistor com valor muito baixo interfere no carregamento do código fonte.
   * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
     conectá-lo somente após a carga do código fonte, na sequência dar reset.
   * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
     o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-```
+'''
                                                            //
                                +----|<|----x--[2k2]--x----|<|---- 5V 
                                |    1n60   |         |    LED
@@ -123,7 +128,7 @@ Atraso CSn e esqumático
        |        +----+            |        +------------- CSN  4| 0 0 |
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
-```
+'''
 
 
 Clock

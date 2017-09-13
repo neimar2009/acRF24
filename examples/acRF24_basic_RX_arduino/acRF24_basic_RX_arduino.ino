@@ -1,8 +1,12 @@
-// acRF24_basic_RX_arduino.ino
 /*
  * Copyright (c) 2017 by Acácio Neimar de Oliveira <neimar2009@gmail.com>
+ * acRF24_basic_RX_arduino.ino
  */
-
+                                /*
+  acRF24_basic_RX_arduino.ino   |
+  receive message from:         |
+  acRF24_basic_TX_attiny.ino    |
+                                */
 #include <acRF24.h>
 
 #define print(x) (Serial.print((x)));
@@ -14,7 +18,7 @@ const uint8_t radioIDs[]   = { 1, 2, 3, 4, 5, 6};  //-> IDs dos rádio que estar
 const uint8_t RFchannel    = 4;  // Canal de comunicação.
 const uint8_t radioID      = 3;  // ID do rádio.
 
-acRF24Class radio(radioID, 7, 6);/*
+acRF24Class radio(radioID);/*, 7, 6);/*
     1 - radioID, csn, ce, irq;
     2 - radioID, csn, ce;
     3 - radioID, csn;
@@ -46,7 +50,7 @@ void initRadio() {
   /*  Identificação:
     Registra os IDs dos rádios substituindo os existentes.
     Valores válidos de identificação, de 1 a 254. */
-  radio.setRadios(radioIDs);
+  radio.setRadios(radioIDs, sizeof(radioIDs));
 
   //  Canal de operação.
   radio.setRFchannel(RFchannel);
@@ -111,7 +115,7 @@ void loop() {
     Se o mode de recepção já estiver ativo, ao reativá-lo o
     comando não disperdiçará processo ou recurso de memória. */
   radio.setModeRX();
-  
+
   // Processa a captura dos dados enquanto hover dados recebidos
   while(radio.isAvailableRX()) {
     c = radio.rxPipeNo();
@@ -120,12 +124,12 @@ void loop() {
     print("; ");
     c = radio.rRXpayload(); // <- Carrega a variável 'payload' com a mensagem recebida.
     f = radio.sourceID();   // <- 'sourceID()' só é válido após a chamada de 'rRXpayload'
-    print("Fonte ID: ");
+    print("Source ID: ");
     print(f);               // Imprime 'f' que contém o ID do rádio transmissor.
     print("; Width: ");
     if (c < 10) print("0");
     print(c);               // Imprime 'c' que contém o tamanho da mensagem.
-    print("; Dados:");
+    print("; Datas:");
     i = 0;
     while( i < c ) {
       print((char)radio.payload[i]); // Imprime cada item da mensagem.

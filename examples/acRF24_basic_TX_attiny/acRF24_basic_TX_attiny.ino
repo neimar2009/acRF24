@@ -57,7 +57,7 @@ void initRadio() {
   /*  Identificação:
     Registra os IDs dos rádios substituindo os existentes.
     Valores válidos de identificação, de 1 a 254. */
-  radio.setRadios(radioIDs);
+  radio.setRadios(radioIDs, sizeof(radioIDs));
 
   //  Canal de operação.
   radio.setRFchannel(RFchannel);
@@ -134,7 +134,7 @@ void loop() {
   }
 
   // Verifica se o tamanho do payload é estático (sabemos que não é).
-  if (radio.isStaticPayload(0)) {
+  if (radio.isStaticPayload()) {
     // Usar 'staticTXpayloadWidth()' para ler o tamanho registrado.
     w = radio.staticTXpayloadWidth();
   } else {
@@ -165,40 +165,40 @@ void flashLED( uint8_t pinLED, uint32_t ms) {
   digitalWrite(pinLED, LOW);
 }
 
-/**  Atraso CSn e esqumático
-
-```  
-T_PECSN2ON  = 50 * 0.1;          // <- Capacitância em pF, tempo em milisegundos.
-        `--> 50Ω x 0.0000001uF   = 0.000005s  ->  5us; tempo de acionamento.
-
-T_PECSN2OFF = 2200 * 0.1;        // <- Capacitância em pF, tempo em milisegundos.
-        |
-        `--> 2.2kΩ x 0.0000001uF = 0.001s   ->   220us; tempo para desligamento.
-```  
-  Obs.: 
-  * Ao alterar o valor do resistor, altere também o valor da diretiva `T_PECSN2OFF`.
-    Sem este ajuste o sistema pode não funcionar, ou funcionar com debilidade.
-```
-  #define T_PECSN2OFF              220    // Tpecsn2off   220us
-```
-  * Resistor com valor muito baixo interfere no carregamento do código fonte.
-  * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
-    conectá-lo somente após a carga do código fonte, na sequência dar reset.
-  * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
-    o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
-```  
-                                                          //
-                               +----|<|----x--[2k2]--x----|<|---- 5V 
-                               |    1n60   |         |    LED
-                               |           |         |   (red)
-                               |  +---||---x         |          +-----+
-                +-\/-+         |  |  100nF |         |--- CE   3| R R |
-    RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
-    NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
-    NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
-       +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
-       |        +----+            |        +------------- CSN  4| 0 0 |
-       +--------------------------x---------------------- GND  1| 1 1 |
-                                                                +-----+
-'''
-**/
+// Atraso CSn e esqumático
+  /****************************************************************************
+  '''    
+    #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
+                                // Resistência externa escolhida  : 2200Ω
+                                // Capacitor escolhido por padrão : 100nF
+                                // 2.2kΩ x 0.0000001uF = 0.00022s -> 220us standby time.
+  '''
+    Nota: 
+    * Ao alterar o valor do resistor, ajuste o valor da diretiva T_PECSN2OFF
+      em "acRF24direcrives.h". Sem este ajuste o sistema pode não funcionar,
+      ou funcionar com debilidade.    
+    * Não é previsto a alteração do valor do capacitor, o ajuste é dado apenas pela
+      alteração do resistor. Em caso de alteração deste valor, considere também a 
+      necessidade de ajustar T_PECSN2ON. Valores menor que 5 para T_PECSN2ON provoca
+      inconsistência ou inoperância no sistem. Favor reportar o resultado.
+    * Resistor com valor muito baixo interfere no carregamento do código fonte.
+    * Valor de 1kΩ foi testado e funcionou bem. Contudo se faz necessário
+      conectá-lo somente após a carga do código fonte, na sequência dar reset.
+    * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
+      o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+  '''
+                                                             //
+                                 +----|<|----x--[2k2]--x----|<|---- 5V 
+                                 |    1n60   |         |    LED
+                                 |           |         |   (red)
+                                 |  +---||---x         |          +-----+
+                  +-\/-+         |  |  100nF |         |--- CE   3| R R |
+      RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
+      NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
+      NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
+         +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
+         |        +----+            |        +------------- CSN  4| 0 0 |
+         +--------------------------x---------------------- GND  1| 1 1 |
+                                                                  +-----+
+  '''
+  ****************************************************************************/

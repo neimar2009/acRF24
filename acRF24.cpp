@@ -6,10 +6,6 @@
 #include <Arduino.h>
 #include "acRF24.h"
 
-char* pFile() {
-  return (__BASE_FILE__);
-};
-
 #ifndef PIN_SPI_SCK
   #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
     //#define PIN_SPI_SS    (3)
@@ -52,13 +48,9 @@ uint8_t SPI_transfer(uint8_t data) {
 
 //== Inicialização ==========================================================
 
-acRF24Class::acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
-  pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
-  // --  
-  flagState(ACTIVED_CS, CSpin != xFF);
-  flagState(ACTIVED_CE, CEpin != xFF);
-  flagState(ACTIVED_IRQ, IRQpin != xFF);
-}
+// acRF24Class::acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
+//   pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
+// }
 
 void acRF24Class::begin() {
 
@@ -69,26 +61,26 @@ void acRF24Class::begin() {
   digitalWrite(SCK, LOW);
   digitalWrite(MOSI, LOW);
   //
-  if (flagState(ACTIVED_CS)) {
+  if (activeCS()) {
     pinMode(CS, OUTPUT);
     digitalWrite(CS, HIGH);
-    flagState(SELECTED, false);
+    flag(SELECTED, false);
   } else {
 	  setCS(false);
 	}
   //
-  if(flagState(ACTIVED_CE)) {
+  if(activeCE()) {
     pinMode(CE, OUTPUT);
     digitalWrite(CE, LOW);
   } else {
-    flagState(ENABLED, true);
+    flag(ENABLED, true);
   }
   //
-  if (flagState(ACTIVED_IRQ)) pinMode(IRQ, INPUT);
+  if (activeIRQ()) pinMode(IRQ, INPUT);
 
   // Espera até que o chip esteja ativo.
   do {
-     delayMicroseconds(T_POWERON);
+     delayMicroseconds((unsigned int)T_POWERON);
   } while(!chipActived());
 
   // TODO: Revisar, e implementar
@@ -273,22 +265,22 @@ void acRF24Class::resetConfig() {
 
 void acRF24Class::setCE( bool enable) {
 
-  if (flagState(ACTIVED_CE)) {
-    if (flagState(ENABLED) == enable) return;
+  if (activeCE()) {
+    if (flag(ENABLED) == enable) return;
     digitalWrite(CE, enable);
-    flagState(ENABLED, enable);
+    flag(ENABLED, enable);
   }
   if (enable) delayMicroseconds(T_STBY2A);
 }
 
 void acRF24Class::setCS( bool select) {
 
-  if (flagState(SELECTED) == select) return;
-  flagState(SELECTED, select);
+  if (flag(SELECTED) == select) return;
+  flag(SELECTED, select);
 
   select = !select; // Select with negative.
 
-  if (flagState(ACTIVED_CS)) {
+  if (activeCS()) {
     digitalWrite(CS, select);
     if (!select) delayMicroseconds(T_PECE2CSN);
   } else {
@@ -304,8 +296,8 @@ void acRF24Class::setCSn( bool selectn) {
 
 void acRF24Class::setPowerDown() {
 
-  if (flagStateCtrl(_MODE__POWERDOWN)) return;
-  setFlagStateCtrl(_MODE__POWERDOWN);
+  if (getFlagMode(_MODE__POWERDOWN)) return;
+  setFlagMode(_MODE__POWERDOWN);
 
   rRegister(CONFIG);
   recData[0] &= ~CONFIG__PWR_UP;
@@ -316,8 +308,8 @@ void acRF24Class::setPowerDown() {
 // Força a entrar no estado de standby-I
 void acRF24Class::setStandbyRX() {
   
-  if (flagStateCtrl(_MODE__STANDBYRX)) return;
-  setFlagStateCtrl(_MODE__STANDBYRX);
+  if (getFlagMode(_MODE__STANDBYRX)) return;
+  setFlagMode(_MODE__STANDBYRX);
 
   goStandby(RX);
   setCE(LOW);
@@ -326,8 +318,8 @@ void acRF24Class::setStandbyRX() {
 // Força a entrar no estado de standby-II
 void acRF24Class::setStandbyTX() {
 
-  if (flagStateCtrl(_MODE__STANDBYTX)) return;
-  setFlagStateCtrl(_MODE__STANDBYTX);
+  if (getFlagMode(_MODE__STANDBYTX)) return;
+  setFlagMode(_MODE__STANDBYTX);
 
   goStandby(TX);
   flushTX();
@@ -336,8 +328,8 @@ void acRF24Class::setStandbyTX() {
 
 void acRF24Class::setModeRX() {
 
-  if (flagStateCtrl(_MODE__MODERX)) return;
-  setFlagStateCtrl(_MODE__MODERX);
+  if (getFlagMode(_MODE__MODERX)) return;
+  setFlagMode(_MODE__MODERX);
 
   goStandby(RX);
   setCE(HIGH);
@@ -345,8 +337,8 @@ void acRF24Class::setModeRX() {
 
 void acRF24Class::setModeTX() {
   
-  if (flagStateCtrl(_MODE__MODETX)) return;
-  setFlagStateCtrl(_MODE__MODETX);
+  if (getFlagMode(_MODE__MODETX)) return;
+  setFlagMode(_MODE__MODETX);
 
   goStandby(TX);
   setCE(HIGH);
@@ -354,30 +346,30 @@ void acRF24Class::setModeTX() {
 
 uint8_t acRF24Class::getMode() {
 
-	if (flagState(MODE_STATE_CTRL)) return MODE_STATE_CTRL; // <- Indefinido.
+	if (flag(MODE_STATE_CTRL)) return MODE_STATE_CTRL; // <- Indefinido.
   uint8_t rec = rRegister(CONFIG);
   // Mode: power_down
   if(!(rec & CONFIG__PWR_UP)) {
-    setFlagStateCtrl(_MODE__POWERDOWN);
+    setFlagMode(_MODE__POWERDOWN);
     return _MODE__POWERDOWN;
   }
   // Mode: standby-I -> StandbyRX
-  if (!flagState(ENABLED)) {
-    setFlagStateCtrl(_MODE__STANDBYRX);
+  if (!flag(ENABLED)) {
+    setFlagMode(_MODE__STANDBYRX);
     return _MODE__STANDBYRX;
   }
   // Mode: modeRX
   if(rec & CONFIG__PRIM_RX) {
-    setFlagStateCtrl(_MODE__MODERX);
+    setFlagMode(_MODE__MODERX);
     return _MODE__MODERX;
   }
   // Mode: standby-II -> StandbyTX
   if((rRegister( FIFO_STATUS) & FIFO_STATUS__TX_EMPTY) == FIFO_STATUS__TX_EMPTY) {
-    setFlagStateCtrl(_MODE__STANDBYTX);
+    setFlagMode(_MODE__STANDBYTX);
     return _MODE__STANDBYTX;    
   }
   // Mode: modeTX
-  setFlagStateCtrl(_MODE__MODETX);
+  setFlagMode(_MODE__MODETX);
   return _MODE__MODETX;
 }
 
@@ -386,7 +378,7 @@ uint8_t acRF24Class::getMode() {
 void acRF24Class::goStandby( bool RXtx) {
 
 	rRegister(CONFIG);
-	bool pd = recData[0] & CONFIG__PWR_UP == 0;
+	bool pd = (recData[0] & CONFIG__PWR_UP) == 0;
   if (RXtx) {
     recData[0] =  recData[0] | CONFIG__PWR_UP  | CONFIG__PRIM_RX;
   } else {
@@ -406,7 +398,7 @@ void acRF24Class::goMode(uint8_t m) {
     case _MODE__MODETX    : setModeTX();    break;
     case _MODE__STANDBYTX : setStandbyTX(); break;
     default: 
-      setFlagStateCtrl(MODE_STATE_CTRL);
+      setFlagMode(MODE_STATE_CTRL);
     break;
   }
 }
@@ -422,7 +414,7 @@ void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount) {
   }
   setCS(false); // or setCSn(HIGH);
 
-  buf[amount] = NULL;
+  buf[amount] = 0;
 }
 
 uint8_t acRF24Class::command(uint8_t cmd) {
@@ -601,7 +593,7 @@ uint8_t acRF24Class::internal_wTXpayload( uint8_t wTX) {
 
 //== Configurações ==========================================================
 
-void acRF24Class::setSufixo(uint8_t* buf) {
+void acRF24Class::setSufixo(const void* buf) {
 
   // for (int i = 0; i < 4; ++i) {
   //   pv_sufixo[i] = buf[i];
@@ -624,7 +616,7 @@ void acRF24Class::setSufixo(uint8_t* buf) {
   #endif
 }
 
-void acRF24Class::getSufixo(uint8_t* buf) {
+void acRF24Class::getSufixo(void* buf) {
 
   // for (int i = 0; i < 4; ++i) {
   //   buf[i] = pv_sufixo[i];
@@ -639,7 +631,7 @@ void acRF24Class::setPayload(void* buf, uint8_t len) {
   setTXpayloadWidth(len);
 
   memcpy( payload, buf, len);
-  payload[len] = NULL;
+  payload[len] = 0;
 }
 
 void acRF24Class::getPayload(void* buf, uint8_t len) {
@@ -748,8 +740,9 @@ void acRF24Class::setDataRate(eDataRate dr) {
 
   //* Aqui é feiro uma auto configuração do tempo de espera
   //* em conformidade com a largura de banda escolhida.
-  dr < 2 ? dr = 4 : dr = 6; //<- 256 * 2 = 1024uS or 256 * 6 = 1536uS  
-  setAutoRetransmissionDelay(dr);
+  uint8_t ard = (u8)dr;
+  ard < 2 ? ard = 4 : ard = 6; //<- 256 * 2 = 1024uS or 256 * 6 = 1536uS
+  setAutoRetransmissionDelay(ard);
 
 	#ifdef __SE8R01__
 	  configBank1();
@@ -769,7 +762,7 @@ eDataRate acRF24Class::getDataRate() {
   uint8_t drl = dr >> 1;
   dr = (dr & 2) | drl;
   if(dr == 3) dr = 2;   //<- Por razão de compatibilidade.
-  return dr;
+  return (eDataRate)dr;
 }
 
 //-- Configurações de modo de operação ----------------------------------------
@@ -930,24 +923,24 @@ void acRF24Class::enablePipe(uint8_t pipe, bool en) {
 
 void acRF24Class::enableDYN_ACK(bool en) {
 
-  if (flagState(MODE_DYN_ACK) == en) return;
+  if (flag(MODE_DYN_ACK) == en) return;
 
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_DYN_ACK)
      : recData[0] &= ~(FEATURE__EN_DYN_ACK);
   wRegister(FEATURE);
 
-  flagState(MODE_DYN_ACK, en);
+  flag(MODE_DYN_ACK, en);
 }
 
 bool acRF24Class::isDYN_ACK() {
 
-  return flagState(MODE_DYN_ACK);
+  return flag(MODE_DYN_ACK);
 }
 
 void acRF24Class::enableDPL(bool en) {
 
-  if (flagState(MODE_DPL) == en) return;
+  if (flag(MODE_DPL) == en) return;
   
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_DPL) 
@@ -955,29 +948,29 @@ void acRF24Class::enableDPL(bool en) {
   wRegister(FEATURE);
 
   // Atualiza o 'state'
-  flagState(MODE_DPL, en);
+  flag(MODE_DPL, en);
 }
 
 bool acRF24Class::isDPL() {
 
-  return flagState(MODE_DPL);
+  return flag(MODE_DPL);
 }
 
 void acRF24Class::enableACK_PAY(bool en) {
 
-  if (flagState(MODE_ACK_PAY) == en) return;
+  if (flag(MODE_ACK_PAY) == en) return;
   
   rRegister(FEATURE);
   en ? recData[0] |=  (FEATURE__EN_ACK_PAY) 
      : recData[0] &= ~(FEATURE__EN_ACK_PAY);
   wRegister(FEATURE);
 
-  flagState(MODE_ACK_PAY, en);
+  flag(MODE_ACK_PAY, en);
 }
 
 bool acRF24Class::isACK_PAY() {
 
-  return flagState(MODE_ACK_PAY);
+  return flag(MODE_ACK_PAY);
 }
 
 // Registra o tamanho do payload a ser enviado.
@@ -1019,7 +1012,7 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
   }
 
   if (isStaticPayload(pipe)) {
-    rRegister(RX_PW_P0 + pipe) & RX_PW_Px__LEN;
+    rRegister(RX_PW_P0 + pipe);// & RX_PW_Px__LEN;
 	} else {
 	  if (command( R_RX_PL_WID) > 32 ){
       pv_sourceID = 0;
@@ -1032,23 +1025,55 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
 
 //== Manipulação dos rádios e canais ==========================================
 
-void acRF24Class::setRadios(uint8_t* buf) {
+void acRF24Class::setRadios(const uint8_t* buf, uint8_t c) {
 
-	// Transfere a lista de ID de rádios para o chip.
-  uint32_t i, p = 0; // <-- short
-  while( p < 6 ) {
-  	if (buf[i] != getSelfID() && buf[i] != 0 && buf[i] <= 254){
-    	pipeReplace(buf[i], p);
-    	p++;
+	// Registra uma nova lista de ID de rádios.
+  uint8_t i = 0, p = 0;
+  // Exclui os rádios existentes.
+  for (i = 0; i < RADIO_AMOUNT; ++i) {
+    if (i != 1) radio[i].ID = 0;
+  }
+  pv_radioCount = 0;
+
+  i = 0;
+  while((i < c) && (i < RADIO_AMOUNT)) {
+    // Exclui selfID, radio 0 e 254 acima
+  	if ((buf[i] != getSelfID()) && (hasRadio(buf[i]) == RADIO_AMOUNT) && (buf[i] != 0) && (buf[i] < 0xFF)){
+      setRadioID(p, buf[i]);
+    	p++;// <- Salta para o próximo pipe.
     }
   	i++;
-  	if (p == 1) p++;
+  	if (p == 1) p++;// <- Salta o pipe do selfID.
   }
-  // Registra o restante de rádios para uso futuro.
-  while(i < RADIO_AMOUNT) {
-  	setRadioID(i, buf[i]);
-  	i++;
+}
+
+void acRF24Class::getRadios(uint8_t* buf, uint8_t c) {
+  
+  uint8_t i = 0;
+  uint8_t r = 0;
+  while( i < c && i < RADIO_AMOUNT) {
+    if ((i != 1) && (radio[r].ID !=0)) {
+      buf[i] = getRadio(r);
+      i++;
+    }
+    r++;
   }
+}
+
+uint8_t acRF24Class::getRadio(uint8_t i) {
+
+  if (i < radioCount()) {
+    if (i > 0) i++; // <- Ignora selfID.
+    // Ignora as identificações 0 (zero).
+    while (i < RADIO_AMOUNT && radio[i].ID == 0) i++;
+    return radio[i].ID;
+  }
+  return 0;
+}
+
+uint8_t acRF24Class::radioCount() {
+
+  return pv_radioCount;
 }
 
 void acRF24Class::setTXradio(uint8_t r) {
@@ -1085,7 +1110,9 @@ uint8_t acRF24Class::getTXaddr() {
 
 void acRF24Class::setRadioID(u8 p, u8 id) {
 
+  // Não salvaguarda o rádio da posição 'p'.
   radio[p].ID = id;
+  pv_radioCount++; // Atualiza a indicação de quantidade de rádios.
   // Sincroniza os rádio rádio com o devido pipe.
   if (p < 6) {
     if(p == 0 ) {
@@ -1119,10 +1146,10 @@ void acRF24Class::radioExchange(uint8_t r, uint8_t p) {
 
   // r: rádio; p: pipe.
   // O pipe 1 é reservado para o rádio base.
-  if ((p == 1) || (r == getRadioID(p))) return;
+  if ((r == getRadioID(p)) || (p == 1)) return;
   // Procede a troca.
-  uint8_t p_out = hasRadio(r); // Pipe que vai receber 'r_out'.
-  uint8_t r_out = getRadioID(p); // Rádio que vai sair.
+  uint8_t p_out = hasRadio(r);   // Posição para onde vai o rádio contido em 'p'.
+  uint8_t r_out = getRadioID(p); // Rádio que está em 'p'.
   
   setRadioID(p, r);       	// <--
   setRadioID(p_out, r_out); // -->
@@ -1140,7 +1167,9 @@ uint8_t acRF24Class::hasRadio(uint8_t r) {
   // Retorna posição do rádio ou 'radioAmount' se não houver.
   uint8_t i = 0;
   for (i = 0; i < RADIO_AMOUNT; ++i) {
-    if (getRadioID(i) == r) break;
+    if ((r != pv_selfID) && (r != 0)) {
+      if (getRadioID(i) == r) break;
+    }
   }
   return i;
 }
@@ -1148,10 +1177,11 @@ uint8_t acRF24Class::hasRadio(uint8_t r) {
 uint8_t acRF24Class::deleteRadio(uint8_t r) {
 
   // Retorna a posição do rádio excluido.
-  // Retorna radio amount se rádio não encontrado.
+  // Retorna radio 'RADIO_AMOUNT' se rádio não encontrado.
   uint8_t p = hasRadio(r);
   if (p < RADIO_AMOUNT && p != 1) {
     setRadioID(p, 0);
+    pv_radioCount--; // Atualiza a indicação de quantidade de rádios.
     return p;
   }
   return RADIO_AMOUNT;
@@ -1163,7 +1193,7 @@ void acRF24Class::enableFanOut(bool en) {
 
   // TODO: Ativar fan-out apenas para o rádio configurado para tal.
   //       Enable fan-out only for the radio configured for this
-  if (flagState(MODE_FAN_OUT) == en) return;
+  if (flag(MODE_FAN_OUT) == en) return;
 
 	for (int i = 0; i < 6; ++i) {
 		rRegister(RX_PW_P0 + i);
@@ -1174,7 +1204,7 @@ void acRF24Class::enableFanOut(bool en) {
     }
 	} 		
 
-  flagState(MODE_FAN_OUT, en);
+  flag(MODE_FAN_OUT, en);
 }
 
 uint8_t acRF24Class::sourceID() {
@@ -1184,7 +1214,7 @@ uint8_t acRF24Class::sourceID() {
 
 bool acRF24Class::isFanOut() {
 
-  return flagState(MODE_FAN_OUT);
+  return flag(MODE_FAN_OUT);
 }
 
 //== Comandos para fins de suporte ==========================================
@@ -1192,7 +1222,7 @@ bool acRF24Class::isFanOut() {
 // Verifica se o rádio está ativo.
 bool acRF24Class::chipActived() {
 
-  return (rRegister(SETUP_AW) & SETUP_AW__AWBYTES > 0);
+  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 0);
 }
 
 bool acRF24Class::isAvailableRX() {
@@ -1243,7 +1273,7 @@ uint8_t acRF24Class::getSelfID() {
 
 uint8_t acRF24Class::staticTXpayloadWidth() {
 
-  return rRegister(RX_PW_P0); // <- Tamanho dinâmico.
+  return rRegister(RX_PW_P0); // <- Tamanho estático.
 }
 
 //-- Pré configuração
@@ -1268,24 +1298,36 @@ uint8_t acRF24Class::staticTXpayloadWidth() {
 
 //== Privados
 
-bool acRF24Class::flagState(uint16_t f) {
+bool acRF24Class::activeCS() {
+  return CS != 0xFF;
+}
+
+bool acRF24Class::activeCE() {
+  return CE != 0xFF;
+}
+
+bool acRF24Class::activeIRQ() {
+  return IRQ != 0xFF;
+}
+
+bool acRF24Class::flag(uint16_t f) {
 
   return ((pv_flagState & f) == f);
 }
 
-void acRF24Class::flagState(uint16_t f, bool e) {
+void acRF24Class::flag(uint16_t f, bool e) {
 
   (e) ? (pv_flagState |= f)
       : (pv_flagState &= ~f);
 }
 
-void acRF24Class::setFlagStateCtrl(uint16_t f) {
+void acRF24Class::setFlagMode(uint16_t f) {
 
   pv_flagState &= ~MODE_STATE_CTRL;
   pv_flagState |= f;
 }
 
-bool acRF24Class::flagStateCtrl(uint16_t f) {
+bool acRF24Class::getFlagMode(uint16_t f) {
 
   return ((pv_flagState & MODE_STATE_CTRL) == f);
 }
@@ -1336,12 +1378,12 @@ void acRF24Class::clearIRQ() {
 	  sts[15] = pv_recAmount;
     #ifdef __SE8R01__
       sts[16] = true;
-    #elif
+    #else
       sts[16] = false;
     #endif
     #ifdef __nRF24L01P__
       sts[17] = true;
-    #elif
+    #else
       sts[17] = false;
     #endif
 	  // uint32_t pv_watchTX = 0;

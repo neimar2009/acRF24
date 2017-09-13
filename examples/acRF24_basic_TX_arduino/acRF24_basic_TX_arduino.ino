@@ -48,7 +48,7 @@ void initRadio() {
   /*  Identificação:
     Registra os IDs dos rádios substituindo os existentes.
     Valores válidos de identificação, de 1 a 254. */
-  radio.setRadios(radioIDs);
+  radio.setRadios(radioIDs,sizeof(radioIDs));
 
   //  Canal de operação.
   radio.setRFchannel(RFchannel);
