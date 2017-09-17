@@ -8,7 +8,7 @@
 - [watchTX()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#watchtx)    
 - [enableFanOut()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#enablefanout)    
 - [ATTiny](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#attiny)    
-- [Atraso CSn e esqumático](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#atraso-csn-e-esqumático)    
+- [Atraso CSn e esquemático](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#atraso-csn-e-esquemático)    
 - [Clock](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#clock)    
 - [Ajuda!](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#ajuda)
 - [Teste](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#teste)
@@ -117,7 +117,7 @@ ATTiny
   - _Spence Konde_ é um trabalho mais completo.
   - _David A. Mellis_ usa menos recurso.
 
-Atraso CSn e esqumático
+Atraso CSn e esquemático
 ------------
 ```   
   #define T_PECSN2OFF     220 // Capacitance in pF, time in milliseconds.
