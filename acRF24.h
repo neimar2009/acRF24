@@ -203,7 +203,7 @@
     #define _RF_SETUP__PA_PWR_12dbm   0x02 // Output -12 dbm
     #define _RF_SETUP__PA_PWR_6dbm    0x04 // Output  -6 dbm
     #define _RF_SETUP__PA_PWR_0dbm    0x06 // Output   0 dbm
-    #define _RF_SETUP__PA_PWR_5dbm    0x06 // Output   0 dbm
+    #define _RF_SETUP__PA_PWR_5dbm    0x06 // Output   0 dbm // For compatibility
   #endif
   #define RF_SETUP__RF_DR_HIGH        0x08 // Select between the high speed data rates.
                                            // This bit is donot care if RF_DR_LOW is set.
@@ -499,7 +499,7 @@ public:
   uint8_t payload[32];
   uint8_t recData[5];
 //== Inicialização ============================================================
-  acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
+  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF) :
     pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {};
   ~acRF24Class(){};
   void begin();
@@ -634,8 +634,8 @@ private:
   // -- RX
   uint8_t internalRXpayloadWidth();
 //== Manipulação dos rádios e canais ==========================================
-  void setRadioID(u8 p, u8 id);
-  uint8_t getRadioID(u8 p);
+  void setRadioID(uint8_t p, uint8_t id);
+  uint8_t getRadioID(uint8_t p);
   void radioExchange(uint8_t r_in, uint8_t p_in);
   void pipeReplace(uint8_t r, uint8_t p);
   uint8_t hasRadio(uint8_t r);

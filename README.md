@@ -4,7 +4,7 @@
 [Poruguês](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
-* Contains settings for use with **nRF24L01+** (in version 0.0.1 not fully tested).
+* Contains settings for use with **nRF24L01+** (in version 0.0.3 not fully tested).
 * Based on manuals:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
  and [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
@@ -78,11 +78,26 @@ Directives
 
 ATTiny
 ------------
-  Core for ATTiny developed by [David A. Mellis](https://github.com/damellis/attiny)
+  Core for ATtiny used in this development:
 
-  Include the link 'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json' in: 
+  [David A. Mellis](https://github.com/damellis/attiny)    
+  Installation URL:    
+  'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json'
 
-  Preferences... -> Additional URLs for Card Management:
+  and
+
+  [Spence Konde (aka Dr. Azzy)](https://github.com/SpenceKonde/ATTinyCore)    
+  Installation URL:    
+  'http://drazzy.com/package_drazzy.com_index.json'
+
+  Choose the corresponding **json** file, copy the URL and include in:
+
+  _Preferences ... -> Additional URLs for Card Management:_
+
+  Notice:
+  - _Spence Konde_ is a more complete work.
+  - _David A. Mellis_ uses less resource.
+
 
 CSn delay, and schematic
 ------------

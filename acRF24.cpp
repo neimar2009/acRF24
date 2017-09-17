@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include "acRF24.h"
 
-#ifndef PIN_SPI_SCK
+#if !defined(PIN_SPI_SCK) && !defined(SCK)
   #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
     //#define PIN_SPI_SS    (3)
     #define PIN_SPI_MOSI  (6)
@@ -48,7 +48,7 @@ uint8_t SPI_transfer(uint8_t data) {
 
 //== Inicialização ==========================================================
 
-// acRF24Class::acRF24Class(u8 selfID, u8 CSpin = xFF, u8 CEpin = xFF, u8 IRQpin = xFF) :
+// acRF24Class::acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF) :
 //   pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
 // }
 
@@ -740,7 +740,7 @@ void acRF24Class::setDataRate(eDataRate dr) {
 
   //* Aqui é feiro uma auto configuração do tempo de espera
   //* em conformidade com a largura de banda escolhida.
-  uint8_t ard = (u8)dr;
+  uint8_t ard = (uint8_t)dr;
   ard < 2 ? ard = 4 : ard = 6; //<- 256 * 2 = 1024uS or 256 * 6 = 1536uS
   setAutoRetransmissionDelay(ard);
 
@@ -1108,7 +1108,7 @@ uint8_t acRF24Class::getTXaddr() {
 
 //-- privados
 
-void acRF24Class::setRadioID(u8 p, u8 id) {
+void acRF24Class::setRadioID(uint8_t p, uint8_t id) {
 
   // Não salvaguarda o rádio da posição 'p'.
   radio[p].ID = id;
@@ -1136,7 +1136,7 @@ void acRF24Class::setRadioID(u8 p, u8 id) {
 }
 
 // Retorna o id do rádio do especificado pipe'.
-uint8_t acRF24Class::getRadioID(u8 p) {
+uint8_t acRF24Class::getRadioID(uint8_t p) {
 
 	// p == pipe or position
 	return radio[p].ID;
