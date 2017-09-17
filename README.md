@@ -1,7 +1,7 @@
 
 **Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85**
 
-[Poruguês](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
+[Português](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
 * Contains settings for use with **nRF24L01+** (in version 0.0.3 not fully tested).
