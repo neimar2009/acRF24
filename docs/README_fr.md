@@ -2,7 +2,7 @@
 **Bibliothèque acRF24 pour se8r01 et nRF24L01+ pour travailler avec arduino et ATtiny84/85**
 
 Parce que je n'ai pas trouvé une bibliothèque qui répondrait à mes besoins, j'ai développé celui que je présente ici.
-* Contient des paramètres à utiliser avec **nRF24L01+** (dans la version 0.0.1 pas entièrement testé).
+* Contient des paramètres à utiliser avec **nRF24L01+** (dans la version 0.0.3 pas entièrement testé).
 * Basé sur les manuels:
 [SE8R01 specification version 1.6 2014-03-05](http://community.atmel.com/sites/default/files/forum_attachments/SE8R01_DataSheet_v1%20-%20副本.pdf)
  et [nRF24L01P Product Specification 1.0](https://www.nordicsemi.com/eng/content/download/2726/34069/file/nRF24L01P_Product_Specification_1_0.pdf).
@@ -69,11 +69,26 @@ Directives
 
 ATTiny
 ------------
-  Core for ATTiny développé par [David A. Mellis](https://github.com/damellis/attiny)
-  
-  Inclure le lien 'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json' dans: 
+Core pour ATtiny utilisé dans ce développement:
 
-  Preferences... -> URL supplémentaires pour la gestion des cartes:
+  [David A. Mellis](https://github.com/damellis/attiny)    
+  URL d'installation:    
+  'https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json'
+
+  et
+
+  [Spence Konde (aka Dr. Azzy)](https://github.com/SpenceKonde/ATTinyCore)    
+  URL d'installation:    
+  'http://drazzy.com/package_drazzy.com_index.json'
+
+  Choisissez le fichier **json** correspondant, copiez l'URL et incluez dans:
+
+  _Préférences ... -> URL supplémentaires pour la gestion des cartes:_
+
+  Remarque:
+  - _Spence Konde_ est un travail plus complet.
+  - _David A. Mellis_ utilise moins de ressources.
+
 
 CSn delay, et schématique
 ------------
