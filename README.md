@@ -136,15 +136,10 @@ CSn delay, and schematic
                                                                 +-----+
 ```
 
+
 Clock
 ------------
  The library provides an automatic method to adjust the chip limit clock.
-
-
-Help!
-------------
-  For lack of elaboration of a help file, please analyze the sample files.
-  Adapt the same to the project need.
 
 
 Test
@@ -154,15 +149,22 @@ Test
   Initially the examples will be based on this configuration.
 
 
+Help file
+------------
+  For lack of elaboration of a help file, please analyze the sample files.
+  Adapt the same to the project need.
+
+
 Help me
 ------------
   Due to the limited time available for development, I present this project in the
-  way that you see it. Personally, I'm sorry, but so far I've been able to develop.
+  way that you see it. I'm sorry, but so far I've been able to develop.
   
   My English is weak, to the extent possible, depending on available time, I will
   translate.
   
   Comments and suggestions will help in improving the project. Welcome.
+
 
 Thanks
 ------------

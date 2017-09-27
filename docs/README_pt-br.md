@@ -138,6 +138,7 @@ Atraso CSn e esquemático
     conectá-lo somente após a carga do código fonte, na sequência dar reset.
   * Usar diodo de germânio que dá queda de tensão de 0,2V. Diodo de silício
     o valor mínino de tensão é de 0,6V sendo necessário para o chip 0,3V.
+  * O resistor de 220Ω é opcional e serve para protejer o programador.
 ```
                                                            //
                                +----|<|----x--[2k2]--x----|<|---- 5V
@@ -147,8 +148,8 @@ Atraso CSn e esquemático
                 +-\/-+         |  |  100nF |         |--- CE   3| R R |
     RESET PB5  1|o   |8  Vcc --|--|--------|---------x--- VCC  2| S F |
     NC    PB3  2|    |7  PB2 --x--|--------|------------- SCK  5| E 2 |
-    NC    PB4  3|    |6  PB1 -----|--------|------------- MISO 6| 8 4 |
-       +- GND  4|    |5  PB0 -----|--------|------------- MOSI 7| R L |
+    NC    PB4  3|    |6  PB1 -----|--------|--[220]------ MISO 7| 8 4 |
+       +- GND  4|    |5  PB0 -----|--------|------------- MOSI 6| R L |
        |        +----+            |        +------------- CSN  4| 0 0 |
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
@@ -160,17 +161,17 @@ Clock
   A biblioteca providencia um método automático para ajustar o clock limite do chip.
 
 
-Ajuda!
-------------
-  Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
-  exemplo. Adapte os mesmos para a necessidade do projeto.
-
-
 Teste
 ------------
   Os testes de desenvolvimento foram feitos entre um **Arduino UNO** e um **ATTiny85**.
 
   Inicialmente os exemplos serão baseados nesta configuração.
+
+
+Arquivo de ajuda
+------------
+  Por falta da elaboração de um arquivo de ajuda, favor analizar os arquivos de
+  exemplo. Adapte os mesmos para a necessidade do projeto.
 
 
 Ajude-me

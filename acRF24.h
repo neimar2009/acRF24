@@ -153,7 +153,7 @@
   #define CONFIG__MASK_MA_X_RT  0x10  // b00010000 Mask interrupt caused by MAX_RT
   #define CONFIG__MASK_TX_DS    0x20  // b00100000 Mask interrupt caused by TX_DS
   #define CONFIG__MASK_RX_DR    0x40  // b01000000 Mask interrupt caused by RX_DR
-  #define CONFIG__RESET         0x80  // b10000000 Reserved. Only 0 allowed
+  #define CONFIG__RESERVED      0x80  // b10000000 Reserved. Only 0 allowed
 //-----------------------------------------------------------------------------
 // RF24 EN_AA fields 0x01
   #define EN_AA__ENAA_P0   0x01  // Enable auto acknowledgement data pipe 0
@@ -210,7 +210,7 @@
                                            // Encoding: [RF_DR_LOW, RF_DR_HIGH]
   #define RF_SETUP__RESERVED          0x10 // Reserved
   #define RF_SETUP__RF_DR_LOW         0x20 // See RF_DR_LOW for encoding.
-  #define RF_SETUP__RF_DR_HIGH        0x08 // See RF_DR_HIGH for encoding.
+  // #define RF_SETUP__RF_DR_HIGH        0x08 // See RF_DR_HIGH for encoding.
   #define RF_SETUP__RF_DR             0x28 // Select between the speed data rates.
   #define _RF_SETUP__RF_DR_1Mbps      0x00 // 1Mbps
   #define _RF_SETUP__RF_DR_2Mbps      0x08 // 2Mbps
@@ -241,7 +241,7 @@
 // RF24 OBSERVE_TX fields 0x08
   #define OBSERVE_TX__ARC_CNT   0x0F // Read only. Count retransmitted packets. The counter is
                                      // reset when transmission of a new packet starts.
-  #define OBSERVE_TX__LENOS_CNT 0xF0 // Read only. Count lost packets. The counter is overflow
+  #define OBSERVE_TX__PLOS_CNT  0xF0 // Read only. Count lost packets. The counter is overflow
                                      // protected to 15, and discontinues at max until reset. The
                                      // counter is reset by writing to RF_CH.
 //-----------------------------------------------------------------------------
@@ -317,11 +317,11 @@
 // RF24 FIFO_STATUS fields 0x17 -> Only 0 allowed
   #define FIFO_STATUS__RX_EMPTY     0x01 // RX FIFO empty flag.
   #define FIFO_STATUS__RX_FULL      0x02 // RX FIFO full flag.
-  #define FIFO_STATUS__RX_RESERVED1 0x0C // Only '00' allowed
+  #define FIFO_STATUS__RESERVED1    0x0C // Only '00' allowed
   #define FIFO_STATUS__TX_EMPTY     0x10 // TX FIFO empty flag.
   #define FIFO_STATUS__TX_FULL      0x20 // TX FIFO full flag.
   #define FIFO_STATUS__TX_REUSE_PL  0x40 // TX REUSE flag.
-  #define FIFO_STATUS__RX_RESERVED2 0x80 // Only '0' allowed
+  #define FIFO_STATUS__RESERVED2    0x80 // Only '0' allowed
 //-----------------------------------------------------------------------------
 // RF24 DYNPD fields 0x1C
   #define DYNPD__DPL_P0       0x01  // Enable dynamic payload length data pipe 0. 
@@ -441,16 +441,16 @@
 // #define RADIO_AMOUNT        12
 
 // flag state
-  #define MODE_STATE_CTRL   0x0007
+  #define MODE__CTRL        0x0007
   #define _MODE__POWERDOWN  0x0000
   #define _MODE__STANDBYRX  0x0001
-  #define _MODE__MODERX     0x0002
-  #define _MODE__MODETX     0x0003
+  #define _MODE__RX         0x0002
+  #define _MODE__TX         0x0003
   #define _MODE__STANDBYTX  0x0004
   #define _MODE__INVALID_5  0x0005
   #define _MODE__INVALID_7  0x0006
-  #define ENABLED           0x0008
-  #define SELECTED          0X0010 /*
+  #define C_ENABLED         0x0008
+  #define C_SELECTED        0X0010 /*
   #define STATE_UNUSED_05   0x0020
   #define STATE_UNUSED_06   0x0040
   #define STATE_UNUSED_07   0x0080 */
@@ -590,7 +590,7 @@ private:
   uint32_t pv_watchTXinterval = 0;
   uint32_t pv_watchTX = 0;
   uint8_t CS = 0, CE = 0, IRQ = 0;
-  uint16_t pv_flagState = MODE_STATE_CTRL;
+  uint16_t pv_flagState = MODE__CTRL;
   uint8_t pv_lastStatus = 0;
   uint8_t pv_recAmount = 0;
   uint8_t pv_sufixo[4];
@@ -648,9 +648,8 @@ private:
   bool activeIRQ();
   bool flag(uint16_t f);
   void flag(uint16_t f, bool e);
-  void setFlagMode(uint16_t f);
-  bool getFlagMode(uint16_t f);
   void clearTX_DS();
   void clearRX_DR();
+  void clearMAX_RT();
   void clearIRQ();
 };
