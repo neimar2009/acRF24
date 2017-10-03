@@ -378,7 +378,7 @@
 
 //-- RF24 delay --
 
-  #define SPI_RF24_LIMIT    10000000UL
+  #define SPI_RF24_LIMIT    10000000UL  // Limit is 10000000UL
   #define T_POWERON             100000  // Tpoweron     100ms
   #if defined __SE8R01__
     #define T_PD2STBY             2000  // Tpd2stby       2ms
