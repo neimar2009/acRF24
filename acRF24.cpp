@@ -29,18 +29,17 @@
 #define MOSI_MSBFIRST(_bit)  {digitalWrite(MOSI, (_bit & 0x80) ? HIGH : LOW); }
 #define MISO_MSBFIRST(_byte) {digitalRead(MISO) ? _byte |= 1 : _byte &= 0xFE; }
 
-// TODO: Verificar a validade de 'SPI_CLOCK_LIMIT'
 #define SPI_CLOCK_LIMIT ((uint32_t)(F_CPU / SPI_RF24_LIMIT))
 
 uint8_t SPI_transfer(uint8_t data) {
 
   for(int i=0; i<8; i++){     // output 8-bit
-    MOSI_MSBFIRST(data);      // Ajusta a porta MOSI com o bit mais significativo de data.
-    delayMicroseconds(SPI_CLOCK_LIMIT); // Tempo de preparação do bit, pelo mastre e pelo escravo.
+    MOSI_MSBFIRST(data);      // Torna disponível na porta MOSI o bit mais significativo de data.
+    delayMicroseconds(SPI_CLOCK_LIMIT); // Tempo de estabilização do bit, pelo mastre e pelo escravo.
     digitalWrite(SCK, HIGH);  // Set SCK high. Send the bit
-    data <<= 1;               // shift next bit into MSB..
-    MISO_MSBFIRST(data);      // capture MISO bit
-    delayMicroseconds(SPI_CLOCK_LIMIT); // Tempo de cópia do bit, pelo mastre e pelo escravo.
+    data <<= 1;               // shift next bit to left...
+    MISO_MSBFIRST(data);      // capture MISO bit. Ready to reset.
+    delayMicroseconds(SPI_CLOCK_LIMIT); // Tempo de captura pelo escravo.
     digitalWrite(SCK, LOW);   // SCK clock down. Reset.
   }
   return data;                // return read unsigned char
@@ -409,6 +408,15 @@ void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount) {
 
   setCS(true);  // or setCSn(LOW);
   pv_lastStatus = SPI_transfer(cmd);
+  // TODO: Se Fun-Out ativo, enviar ou receber primeiro o cabeçalho.
+  // if ((cmd == R_RX_PAYLOAD || cmd == W_TX_PAYLOAD) && isFanOut()) {
+  //   if(cmd == R_RX_PAYLOAD) {
+  //     pv_sourceID = SPI_transfer(buf[i]);
+  //   } else {
+  //     SPI_transfer(pv_selfID);
+  //   }
+  //   // amount--;
+  // }
   for (int i = 0; i < amount; ++i) {
     buf[i] = SPI_transfer(buf[i]);
   }
@@ -580,7 +588,7 @@ uint8_t acRF24Class::internal_wTXpayload( uint8_t wTX) {
     payload[0] = getSelfID();
   }
 
-  command(wTX);
+  command(wTX); //W_TX_PAYLOAD or W_TX_PAYLOAD_NO_ACK
 
   #ifdef __nRF24L01P__
     uint8_t a = pv_lastStatus;
@@ -1222,11 +1230,14 @@ bool acRF24Class::isFanOut() {
 // Verifica se o rádio está ativo.
 bool acRF24Class::chipActived() {
 
-  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 0);
+  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 1);
 }
 
 bool acRF24Class::isAvailableRX() {
   
+  // TODO: Só pode ser avaliável se o tamanho dos dados for maior que zero;
+  // Se canal 1 no caso de Fan-Out estiver ativo;
+  // Se o rádio que está transmitindo estiver na lista de rádios.
   return !(rRegister( FIFO_STATUS) & FIFO_STATUS__RX_EMPTY);
 }
 
@@ -1239,7 +1250,7 @@ bool acRF24Class::isAvailableTX() {
     if (millis() - pv_watchTXinterval >= pv_watchTX) {
       pv_watchTXinterval = 0;
       flushTX();
-      clearMAX_RT();
+      // clearMAX_RT();
     } else {
       reuseTXpayload();
       delay(4);

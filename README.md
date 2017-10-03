@@ -1,6 +1,6 @@
 
-**Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85**
-
+#Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85#
+----
 [Português](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
@@ -15,6 +15,8 @@ Because I did not find a library that would meet my needs I developed the one I 
 * Development for the purpose of chip compatibility.
 * It enables up to 254 radios.
 
+
+------------
 Directives
 ------------
   The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.    
@@ -31,6 +33,7 @@ Directives
 /************************************************************/
 ```
 
+------------
 `sourceID()`
 ------------
   Fan-Out Mode uses the first byte of payload to identify the radio from which
@@ -58,6 +61,7 @@ Directives
   Replace 12 with the desired amount. Observe the limit of *254*.
 
 
+------------
 `watchTX()`
 ------------
   When the radio receiver falls for a long period of time, *ACK* does not
@@ -69,6 +73,7 @@ Directives
   operate with others radios
 
 
+------------
 `enableFanOut()`
 ------------
   Call `enableFanOut(true)` to enable the possibility of receiving the
@@ -76,6 +81,7 @@ Directives
   should be common to radios that will commence.
 
 
+------------
 ATTiny
 ------------
   Core for ATtiny used in this development:
@@ -99,6 +105,7 @@ ATTiny
   - _David A. Mellis_ uses less resource.
 
 
+------------
 CSn delay, and schematic
 ------------
 ```
@@ -137,11 +144,18 @@ CSn delay, and schematic
 ```
 
 
+  |######troubleshoot######|
+  :---:
+  | A parasitic resistance between CSN and VCC was found on some SE8R01 chip, which is still not defined. In case of failure the value of 2k2 must be increased so that in parallel to the parasitic value it results in an approximate value of 2k2 (try 3k3 or 3k9). |
+
+
+------------
 Clock
 ------------
  The library provides an automatic method to adjust the chip limit clock.
 
 
+------------
 Test
 ------------
   Development tests were done between an *Arduino UNO* and an *ATTiny85*.
@@ -149,12 +163,14 @@ Test
   Initially the examples will be based on this configuration.
 
 
+------------
 Help file
 ------------
   For lack of elaboration of a help file, please analyze the sample files.
   Adapt the same to the project need.
 
 
+------------
 Help me
 ------------
   Due to the limited time available for development, I present this project in the
@@ -166,6 +182,7 @@ Help me
   Comments and suggestions will help in improving the project. Welcome.
 
 
+------------
 Thanks
 ------------
   **I thank God.**
