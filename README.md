@@ -1,6 +1,7 @@
-
-#Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85#
-----
+     
+### Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85    
+    
+----    
 [Português](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
@@ -144,7 +145,7 @@ CSn delay, and schematic
 ```
 
 
-  |######troubleshoot######|
+  |Troubleshoot|
   :---:
   | A parasitic resistance between CSN and VCC was found on some SE8R01 chip, which is still not defined. In case of failure the value of 2k2 must be increased so that in parallel to the parasitic value it results in an approximate value of 2k2 (try 3k3 or 3k9). |
 
