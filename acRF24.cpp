@@ -404,25 +404,34 @@ void acRF24Class::goMode(uint8_t m) {
 
 //== Comunicação ============================================================
 
-void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount) {
+// cmd    : ação;
+// dataOUT: dados que serão transmitidos;
+// dataIN : dados recebidos;
+// amount : quantidade de dados.
+void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* dataOUT, uint8_t* dataIN, uint8_t amount) {
 
   setCS(true);  // or setCSn(LOW);
   pv_lastStatus = SPI_transfer(cmd);
-  // TODO: Se Fun-Out ativo, enviar ou receber primeiro o cabeçalho.
-  // if ((cmd == R_RX_PAYLOAD || cmd == W_TX_PAYLOAD) && isFanOut()) {
-  //   if(cmd == R_RX_PAYLOAD) {
-  //     pv_sourceID = SPI_transfer(buf[i]);
-  //   } else {
-  //     SPI_transfer(pv_selfID);
-  //   }
-  //   // amount--;
-  // }
+  // Se Fun-Out estiver ativo, enviar ou receber primeiro o cabeçalho.
+  if ((cmd == R_RX_PAYLOAD || cmd == W_TX_PAYLOAD) && isFanOut()) {
+    if(cmd == R_RX_PAYLOAD) {
+      pv_sourceID = SPI_transfer(0);
+    } else {
+      SPI_transfer(pv_selfID);
+    }
+  }
+  // 
   for (int i = 0; i < amount; ++i) {
-    buf[i] = SPI_transfer(buf[i]);
+    dataIN[i] = SPI_transfer(dataOUT[i]);
   }
   setCS(false); // or setCSn(HIGH);
 
-  buf[amount] = 0;
+  dataIN[amount] = 0;
+}
+
+void acRF24Class::spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount) {
+  
+  spiTransfer(cmd, buf, buf, amount);
 }
 
 uint8_t acRF24Class::command(uint8_t cmd) {
@@ -459,7 +468,7 @@ uint8_t acRF24Class::command(uint8_t cmd) {
       break;
   }
 
-  spiTransfer(cmd, p, pv_recAmount);
+  spiTransfer(cmd, p, p, pv_recAmount);
   if(pv_recAmount == 0) recData[0] = pv_lastStatus;
   return recData[0];
 }
@@ -493,9 +502,7 @@ uint8_t acRF24Class::Activate(uint8_t cmd) {   // ACTIVATE
 uint8_t acRF24Class::rRXpayloadWidth() {
 
   // O retorn é correspondente ao 'pipe' onde entrou os dados.
-  uint8_t w = internalRXpayloadWidth();
-  if (isFanOut() && w > 0 ) w--;
-  return w;
+  return internalRXpayloadWidth();
 }
 
 // Retorna o tamanho do Payload e o conteúdo passado para o payload[].
@@ -503,17 +510,9 @@ uint8_t acRF24Class::rRXpayload() {
 
   pv_recAmount = internalRXpayloadWidth();
   if(pv_recAmount == 0) return 0;
+
   command( R_RX_PAYLOAD);  // Carrega payload.
-  
-  if (isFanOut()) {
-    // Ajusta 'payload' em conformidade com 'Fan-Out'.
-    pv_sourceID = payload[0];
-    // memcpy(payload, payload+1, pv_recAmount);
-    for (int i = 0; i < pv_recAmount; ++i) {
-      payload[i] = payload[i+1];
-    }
-    pv_recAmount--;
-  }
+
   if (pv_recAmount == 0) pv_sourceID = 0;
 
   #ifdef __nRF24L01P__
@@ -525,10 +524,48 @@ uint8_t acRF24Class::rRXpayload() {
   return pv_recAmount;
 }
 
+// Método de alto nível, redobrar a atenção ao usar.
+uint8_t acRF24Class::rRXpayload(void* buf, uint8_t len) {
+
+  if(isFanOut() && (len>31)) len = 31;
+  if (len > 32) len = 32;
+
+  spiTransfer(R_RX_PAYLOAD, payload, buf, len);
+  recData[0] = pv_lastStatus;
+
+  if (pv_recAmount == 0) pv_sourceID = 0;
+
+  #ifdef __nRF24L01P__
+    len = pv_recAmount;
+    clearRX_DR();
+    return len;
+  #endif
+
+  return pv_recAmount;
+}
+
 // Retorna status
 uint8_t acRF24Class::wTXpayload() {
 
   return internal_wTXpayload( W_TX_PAYLOAD);
+}
+
+// Método de alto nível, redobrar a atenção ao usar.
+uint8_t acRF24Class::wTXpayload(void* buf, uint8_t len) {
+
+  if(isFanOut() && (len>31)) len = 31;
+  if (len > 32) len = 32;
+
+  spiTransfer(W_TX_PAYLOAD, buf, payload, len);
+  recData[0] = pv_lastStatus;
+  
+  #ifdef __nRF24L01P__
+    len = pv_lastStatus;
+    clearTX_DS();
+    return len;
+  #endif
+
+  return recData[0];
 }
 
 // Ainda não testado
@@ -578,15 +615,6 @@ uint8_t acRF24Class::nop() {          // NOP
 uint8_t acRF24Class::internal_wTXpayload( uint8_t wTX) {
 
   pv_recAmount = internalTXpayloadWidth();
-  if (isFanOut()) {
-    // Ajusta 'payload' em conformidade com 'Fan-Out'.
-    uint8_t i = (pv_recAmount > 31) ? 31 : pv_recAmount ;
-    while (i > 0) {
-      payload[i] = payload[i-1];
-      i--;
-    }
-    payload[0] = getSelfID();
-  }
 
   command(wTX); //W_TX_PAYLOAD or W_TX_PAYLOAD_NO_ACK
 
@@ -635,7 +663,6 @@ void acRF24Class::getSufixo(void* buf) {
 void acRF24Class::setPayload(void* buf, uint8_t len) {
 
   // TODO: Verificar a necessidade deste 'if'.
-  if (len > 32) len = 32;
   setTXpayloadWidth(len);
 
   memcpy( payload, buf, len);
@@ -990,7 +1017,7 @@ void acRF24Class::setTXpayloadWidth(uint8_t w) {
   if (isStaticPayload(0)) {
     pv_txPayloadWidth = rRegister(RX_PW_P0);
   } else {
-    if (isFanOut()) w++;
+    if (isFanOut() && (w > 31)) w = 31;
     if (w > 32) w = 32;
     pv_txPayloadWidth = w;
   }
@@ -1002,8 +1029,10 @@ uint8_t acRF24Class::internalTXpayloadWidth() {
   // TODO: Exluir na nova versão. 'pv_txPayloadWidth' já estará atualizado.
   if (isStaticPayload(0)) {
     pv_txPayloadWidth = rRegister(RX_PW_P0);
+    if(isFanOut() && (pv_txPayloadWidth > 0) && (pv_txPayloadWidth < 32))
+      return (pv_txPayloadWidth - 1); // <- para tamanho estático.
   }
-  return pv_txPayloadWidth;// <- para tamanho dinâmico
+  return pv_txPayloadWidth;// <- para tamanho dinâmico.
 }
 
 uint8_t acRF24Class::internalRXpayloadWidth() {
@@ -1028,6 +1057,7 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
       return 0;
     }
   }
+  if(isFanOut() && (recData[0] > 0)) recData[0]--;
   return recData[0];// Contém o resultado da leitura 'R_RX_PL_WID'.  
 }
 
@@ -1222,7 +1252,7 @@ uint8_t acRF24Class::sourceID() {
 
 bool acRF24Class::isFanOut() {
 
-  return flag(MODE_FAN_OUT);
+  return ((pv_flagState & MODE_FAN_OUT) == MODE_FAN_OUT);
 }
 
 //== Comandos para fins de suporte ==========================================
