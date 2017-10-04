@@ -511,6 +511,7 @@ public:
   void setModeTX();         // CONFIG  0x00 (PWR_UP, PRIM_RX)
   uint8_t getMode();
 //== Comunicação ==============================================================
+  void spiTransfer(uint8_t cmd, uint8_t* dataOUT, uint8_t* dataIN, uint8_t amount);
   void spiTransfer(uint8_t cmd, uint8_t* buf, uint8_t amount);
   uint8_t command(uint8_t rec);
 //== Comandos Nativo ==========================================================
@@ -519,7 +520,9 @@ public:
   uint8_t Activate(uint8_t cmd);   // ACTIVATE
   uint8_t rRXpayloadWidth();       // R_RX_PL_WID
   uint8_t rRXpayload();            // R_RX_PAYLOAD
+  uint8_t rRXpayload(void* buf, uint8_t len); // Care. High level R_RX_PAYLOAD.
   uint8_t wTXpayload();            // W_TX_PLOAD
+  uint8_t wTXpayload(void* buf, uint8_t len); // Fast W_TX_PLOAD
   uint8_t wACKpayload();           // W_ACK_PAYLOAD
   uint8_t wTXpayloadNoACK();       // W_TX_PAYLOAD_NO_ACK
   uint8_t reuseTXpayload();        // REUSE_TX_PL
