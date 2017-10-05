@@ -1,7 +1,7 @@
 
-**Biblioteca acRF24 para se8r01 e nRF24L01+ para trabalhar com arduino e ATtiny84/85**
+## Biblioteca acRF24 para se8r01 e nRF24L01+ para trabalhar com arduino e ATtiny84/85
 
-# Índice:
+### Índice:
 - [Desenvolvimento](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#desenvolvimento)
 - [Diretives](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#diretivas)    
 - [sourceID()](https://github.com/neimar2009/acRF24/blob/master/docs/README_pt-br.md#sourceid)    
@@ -154,7 +154,7 @@ Atraso CSn e esquemático
        +--------------------------x---------------------- GND  1| 1 1 |
                                                                 +-----+
 ```
-  |######troubleshoot######|
+  |Solução de problema|
   :---:
   | Foi encontrado uma resistência parasita entre CSN e VCC em alguns chip SE8R01, valor este que ainda não está definido. Em caso de falha deve ser aumentado o valor de 2k2 para que em paralelo ao valor parasita resulte num valor aproximando de 2k2 desejado (experimente 3k3 ou 3k9). |
 

@@ -527,21 +527,16 @@ uint8_t acRF24Class::rRXpayload() {
 // Método de alto nível, redobrar a atenção ao usar.
 uint8_t acRF24Class::rRXpayload(void* buf, uint8_t len) {
 
-  if(isFanOut() && (len>31)) len = 31;
-  if (len > 32) len = 32;
-
   spiTransfer(R_RX_PAYLOAD, payload, buf, len);
   recData[0] = pv_lastStatus;
 
-  if (pv_recAmount == 0) pv_sourceID = 0;
-
   #ifdef __nRF24L01P__
-    len = pv_recAmount;
+    len = pv_lastStatus;
     clearRX_DR();
     return len;
   #endif
 
-  return pv_recAmount;
+  return pv_lastStatus;
 }
 
 // Retorna status
@@ -553,9 +548,6 @@ uint8_t acRF24Class::wTXpayload() {
 // Método de alto nível, redobrar a atenção ao usar.
 uint8_t acRF24Class::wTXpayload(void* buf, uint8_t len) {
 
-  if(isFanOut() && (len>31)) len = 31;
-  if (len > 32) len = 32;
-
   spiTransfer(W_TX_PAYLOAD, buf, payload, len);
   recData[0] = pv_lastStatus;
   
@@ -565,7 +557,7 @@ uint8_t acRF24Class::wTXpayload(void* buf, uint8_t len) {
     return len;
   #endif
 
-  return recData[0];
+  return pv_lastStatus;
 }
 
 // Ainda não testado
