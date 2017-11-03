@@ -499,8 +499,7 @@ public:
   uint8_t payload[32];
   uint8_t recData[5];
 //== Inicialização ============================================================
-  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF) :
-    pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {};
+  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF);
   ~acRF24Class(){};
   void begin();
 //== Controle do chip =========================================================
@@ -597,15 +596,15 @@ private:
   uint8_t CS = 0, CE = 0, IRQ = 0;
   uint16_t pv_flagState = MODE__CTRL;
   uint8_t pv_lastStatus = 0;
-  uint8_t pv_recAmount = 0;
+  uint8_t pv_recAmount  = 0;
   uint8_t pv_sufixo[4];
   uint8_t pv_txPayloadWidth = 0;
-  uint8_t pv_RFchannel = 0;
+  uint8_t pv_RFchannel  = 0;
   // -- Rádio
-  uint8_t pv_selfID   = 0;
-  uint8_t pv_targetID = 0;
-  uint8_t pv_sourceID = 0;
-  uint8_t pv_radioCount = 5; // default - 1
+  uint8_t pv_selfID     = 0;
+  uint8_t pv_targetID   = 0;
+  uint8_t pv_sourceID   = 0;
+  uint8_t pv_radioCount = 0;
   sRadio radio[RADIO_AMOUNT];
 //== Inicialização ============================================================
   void resetConfig();
