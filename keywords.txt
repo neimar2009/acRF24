@@ -6,7 +6,6 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-# acSE8R01						KEYWORD1
 ePA								KEYWORD1
 eDataRate						KEYWORD1
 
@@ -16,7 +15,7 @@ eDataRate						KEYWORD1
 
 payload 						KEYWORD2
 recData 						KEYWORD2
-SE8R01Class						KEYWORD2
+acRF24Class						KEYWORD2
 begin 							KEYWORD2
 setPowerDown					KEYWORD2
 setStandbyRX					KEYWORD2
@@ -49,6 +48,7 @@ setPApower						KEYWORD2
 getPApower						KEYWORD2
 setDataRate						KEYWORD2
 getDataRate						KEYWORD2
+receivedPower					KEYWORD2
 setStaticPayload				KEYWORD2
 isStaticPayload					KEYWORD2
 setDynamicPayload				KEYWORD2
@@ -74,6 +74,8 @@ getVars							KEYWORD2
 # Constants (LITERAL1)
 #######################################
 
+RX 								LITERAL1
+TX 		 						LITERAL1
 RADIO_AMOUNT					LITERAL1
 R_REGISTER 						LITERAL1
 W_REGISTER 						LITERAL1

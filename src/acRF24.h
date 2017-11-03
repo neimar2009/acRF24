@@ -447,7 +447,7 @@
   #define _MODE__RX         0x0002
   #define _MODE__TX         0x0003
   #define _MODE__STANDBYTX  0x0004
-  #define _MODE__INVALID_5  0x0005
+  #define _MODE__STANDBY    0x0005
   #define _MODE__INVALID_7  0x0006
   #define C_ENABLED         0x0008
   #define C_SELECTED        0X0010 /*
@@ -499,8 +499,7 @@ public:
   uint8_t payload[32];
   uint8_t recData[5];
 //== Inicialização ============================================================
-  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF) :
-    pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {};
+  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF);
   ~acRF24Class(){};
   void begin();
 //== Controle do chip =========================================================
@@ -540,6 +539,8 @@ public:
   ePA getPApower();
   void setDataRate(eDataRate dr);               // RF_SETUP   0x06 (RF_DR)
   eDataRate getDataRate();
+  int8_t receivedPower(uint8_t channel);
+  int8_t receivedPower();
   //-- Configurações de modo de operação --------------------------------------
   // -- RX
   void setStaticPayload(uint8_t pipe, uint8_t len);
@@ -595,15 +596,15 @@ private:
   uint8_t CS = 0, CE = 0, IRQ = 0;
   uint16_t pv_flagState = MODE__CTRL;
   uint8_t pv_lastStatus = 0;
-  uint8_t pv_recAmount = 0;
+  uint8_t pv_recAmount  = 0;
   uint8_t pv_sufixo[4];
   uint8_t pv_txPayloadWidth = 0;
-  uint8_t pv_RFchannel = 0;
+  uint8_t pv_RFchannel  = 0;
   // -- Rádio
-  uint8_t pv_selfID   = 0;
-  uint8_t pv_targetID = 0;
-  uint8_t pv_sourceID = 0;
-  uint8_t pv_radioCount = 5; // default - 1
+  uint8_t pv_selfID     = 0;
+  uint8_t pv_targetID   = 0;
+  uint8_t pv_sourceID   = 0;
+  uint8_t pv_radioCount = 0;
   sRadio radio[RADIO_AMOUNT];
 //== Inicialização ============================================================
   void resetConfig();
@@ -646,9 +647,9 @@ private:
   // -- Fan-out ---------------------------------------------------------------
   bool isFanOut();
 //== Comandos para fins de suporte ============================================
-  bool activeCS();
-  bool activeCE();
-  bool activeIRQ();
+  bool isActiveCS();
+  bool isActiveCE();
+  bool isActiveIRQ();
   bool flag(uint16_t f);
   void flag(uint16_t f, bool e);
   void clearTX_DS();

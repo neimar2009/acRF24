@@ -7,11 +7,10 @@
     "type": "git",
     "url": "https://github.com/neimar2009/acRF24"
   },
-  "version": "0.0.3",
+  "version": "0.0.4",
   "frameworks": "arduino",
   "platforms": [
     "atmelavr",
-    "attiny85",
-    "attiny84"
+    "attiny"
   ]
 }

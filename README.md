@@ -1,7 +1,12 @@
+
+#Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85#
+----
+
+:----:
+|So far, the sample files are not upgraded to a new version.|
+
+---
      
-### Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85    
-    
-----    
 [Português](docs/README_pt-br.md), [Français](docs/README_fr.md), [русский](docs/README_ru.md)
 
 Because I did not find a library that would meet my needs I developed the one I present here.
@@ -22,9 +27,14 @@ Directives
 ------------
   The compilation is active for the **SE8R01** chip with the `__SE8R01__` directive.    
   In case of compiling to **nRF24L01+**, use the `__nRF24L01P__` directive.    
-  Go to the top of the file `acRF24directives.h` and change the comment as desired.
+  For convenience, the possibility of including the directives in the main file before the declaration `#include <acRF24.h>` was implemented,    
+
+  or    
+
+  go to the top of the file `acRF24directives.h` and change the comment as desired.
 
 ```
+#if !defined(__SE8R01__) && !defined(__nRF24L01P__)
 /************************************************************/
 /*           Comment out the unused directive.              */
 /*                                                          */
@@ -32,6 +42,7 @@ Directives
 // #define __nRF24L01P__    // <- Comment if you do not use
 /*                                                          */
 /************************************************************/
+#endif
 ```
 
 ------------
@@ -48,16 +59,25 @@ Directives
   Quantity: 256 - (neutral + header) = *254*.
   
   For many radios there is an expressive use of memory, for this reason a base
-  configuration of 12 radios has been chosen. If there is a need for a larger
-  number, then change to `acRF24.h`:
+  configuration of 24 radios has been chosen. If a larger number of radios are required, include the directives    
+  `#define RADIO_AMOUNT 24`    
+  with the desired value in the main file before the    
+  `#include <acRF24.h>`    
+  statement.
+
+  or    
+
+  then change to `acRF24directives.h`:
 
 ```
+#if !defined(RADIO_AMOUNT)
 /************************************************************/
 /*      Number of radios (Change to desired quantity).      */
 /*                                                          */
-#define RADIO_AMOUNT        12
+#define RADIO_AMOUNT        24
 /*                                                          */
 /************************************************************/
+#endif
 ```
   Replace 12 with the desired amount. Observe the limit of *254*.
 
@@ -147,7 +167,7 @@ CSn delay, and schematic
 
   |Troubleshoot|
   :---:
-  | A parasitic resistance between CSN and VCC was found on some SE8R01 chip, which is still not defined. In case of failure the value of 2k2 must be increased so that in parallel to the parasitic value it results in an approximate value of 2k2 (try 3k3 or 3k9). |
+  | A parasitic resistance between CSN and VCC was found on some SE8R01 chip, which is still not defined. In case of failure the value of 2k2 must be increased so that in parallel to the parasitic value it results in an approximate value of 2k2 (try 2k7 or 3k3). The parasite resistor has an estimated value of 20k.|
 
 
 ------------
