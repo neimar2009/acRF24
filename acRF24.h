@@ -447,7 +447,7 @@
   #define _MODE__RX         0x0002
   #define _MODE__TX         0x0003
   #define _MODE__STANDBYTX  0x0004
-  #define _MODE__INVALID_5  0x0005
+  #define _MODE__STANDBY    0x0005
   #define _MODE__INVALID_7  0x0006
   #define C_ENABLED         0x0008
   #define C_SELECTED        0X0010 /*
@@ -540,6 +540,8 @@ public:
   ePA getPApower();
   void setDataRate(eDataRate dr);               // RF_SETUP   0x06 (RF_DR)
   eDataRate getDataRate();
+  int8_t receivedPower(uint8_t channel);
+  int8_t receivedPower();
   //-- Configurações de modo de operação --------------------------------------
   // -- RX
   void setStaticPayload(uint8_t pipe, uint8_t len);
@@ -646,9 +648,9 @@ private:
   // -- Fan-out ---------------------------------------------------------------
   bool isFanOut();
 //== Comandos para fins de suporte ============================================
-  bool activeCS();
-  bool activeCE();
-  bool activeIRQ();
+  bool isActiveCS();
+  bool isActiveCE();
+  bool isActiveIRQ();
   bool flag(uint16_t f);
   void flag(uint16_t f, bool e);
   void clearTX_DS();
