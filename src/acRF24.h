@@ -496,7 +496,8 @@ public:
   uint8_t payload[32];
   uint8_t recData[5];
 //== Inicialização ============================================================
-  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF);
+  acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF)
+  : pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {};
   ~acRF24Class(){};
   void begin();
 //== Controle do chip =========================================================

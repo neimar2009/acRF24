@@ -47,8 +47,7 @@ uint8_t SPI_transfer(uint8_t data) {
 
 //== Inicialização ==========================================================
 
-acRF24Class::acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xFF, uint8_t IRQpin = xFF) :
-  pv_selfID(selfID), CS(CSpin), CE(CEpin), IRQ(IRQpin) {
+void acRF24Class::begin() {
 
   //
   if(isActiveCE()) {
@@ -77,9 +76,6 @@ acRF24Class::acRF24Class(uint8_t selfID, uint8_t CSpin = xFF, uint8_t CEpin = xF
   // Pino de compasso SCK
   pinMode(SCK, OUTPUT);  
   digitalWrite(SCK, !isActiveCS());
-};
-
-void acRF24Class::begin() {
 
   // Espera até que o chip esteja ativo.
   do {
