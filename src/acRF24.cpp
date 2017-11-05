@@ -114,7 +114,10 @@ void acRF24Class::begin() {
   // TODO: Revisar, e implementar
   resetConfig();
 
-  #ifdef __nRF24L01P__
+  #ifdef __SE8R01__
+
+    configBank1();
+  #elif defined __nRF24L01P__
   
     toggleFeature();
   #endif
@@ -141,9 +144,11 @@ void acRF24Class::resetConfig() {
   wRegister(FEATURE);         // Address: 1Dh
 
   // Calibração
-  // rRegister(SETUP_VALUE);
-  recData[3] = 0x80;          // Main band gap wait counter. Default: 0x10 (16us)
+  //[28h] [32h] [80h] [10h] [00h] default
+  rRegister(SETUP_VALUE);
+  recData[3] = 0x90;          // Main band gap wait counter. Default: 0x10 (16us)
   wRegister(SETUP_VALUE);     // Address: 1Eh
+  delayMicroseconds(5);
 
   recData[0] = 0x77;          // Default: 0x32
   recData[1] = 0;
@@ -151,6 +156,138 @@ void acRF24Class::resetConfig() {
 
   // getMode();                  // Atualiza a variável indicadora de modo.
 }
+
+#ifdef __SE8R01__   // configBank1()
+
+  void acRF24Class::configBank1() {
+
+    // -----------------------------------------
+    // Calibração inicial
+    // -----------------------------------------
+
+      uint8_t* p = recData;    
+      uint8_t dr = getDataRate();
+      uint8_t m  = getMode();
+      setPowerDown();
+      selectBank(BANK1);
+
+      // - 0x01 PLL_CTL0
+      p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;
+      if (dr == DR_2Mbps) 
+           { p[3] = 0xE6; }
+      else { p[3] = 0xE4; }
+      spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
+
+      // - 0x03 CAL_CTL
+      // p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50;
+      // spiTransfer(W_REGISTER | BANK1_CAL_CTL,  p, 5);
+
+      // - 0x0A IF_FREQ
+      p[0] = 0x00; p[1] = 0x00;
+      if (dr == DR_2Mbps)
+           { p[2]=0x1E;}
+      else { p[2]=0x1F;}
+      spiTransfer(W_REGISTER | BANK1_IF_FREQ, p, 3);
+
+      // - 0x0C FDEV
+      if (dr == DR_2Mbps)
+           { p[0] = 0x29;}
+      else { p[0] = 0x14;}
+      spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
+
+      // - 0x17 DAC_CAL_LOW
+      // p[0] = 0x00;
+      // spiTransfer(W_REGISTER | BANK1_DAC_CAL_LOW, p, 1);
+
+      // - 0x18 DAC_CAL_HI
+      // p[0] = 0x7F;
+      // spiTransfer(W_REGISTER | BANK1_DAC_CAL_HI,  p, 1);
+
+      // - 0x1D AGC_GAIN      ?? Pode dar erro
+      // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xEB; p[3] = 0x1C; p[4] = 0x01;
+      // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5);  // 4 ou 5
+
+      // -- 0x1E RF_IVGEN     ?? Pode dar erro
+      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81;// p[4] = 0x1F;
+      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4);  // 4 ou 5
+    
+      // - 0x0F CTUNING     [12h] 
+      // p[0] = 0x12;
+      // spiTransfer(W_REGISTER | BANK1_CTUNING, p, 1);
+
+      // - 0x10 FTUNING     [02h] [05h] 
+      // p[0] = 0x02; p[1] = 0x05;
+      // spiTransfer(W_REGISTER | BANK1_FTUNING, p, 1);
+      
+      // - 0x12 FAGC_CTRL   [00h] [40h] [A3h]
+      // p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3;
+      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 1);
+    
+      selectBank(BANK0);
+      uint8_t rConf = rRegister(CONFIG);
+      for (uint8_t i = 0; i < 5; ++i){
+        recData[0] = 3;
+        wRegister(CONFIG);
+        delay(15);
+        recData[0] = 1;
+        wRegister(CONFIG);
+        delay(25);
+      }
+      recData[0] = 3;
+      wRegister(CONFIG);
+      delay(25);
+      recData[0] = rConf;
+      wRegister(CONFIG);
+
+    // --------------------------------------------
+    // Inicialização da parte analógica do circuito
+    // --------------------------------------------
+
+      selectBank(BANK1);
+
+      // - 0x01 PLL_CTL0
+      p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;  
+      if (dr == DR_2Mbps)
+           { p[3] = 0xE2;}
+      else { p[3] = 0xE0;}
+      spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
+
+      // - 0x03 CAL_CTL
+      // p[0] = 0x29; p[1] = 0x89; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50;  
+      // spiTransfer(W_REGISTER | BANK1_CAL_CTL, p, 5);
+
+      // - 0x0C BANK1_FDEV
+      if (dr == DR_2Mbps)
+           { p[0] = 0x29;}
+      else { p[0] = 0x14;}       
+      spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
+
+      // - 0x11 RX_CTRL       !! Dá erro !!
+      // p[0] = 0x55; p[1] = 0xC2; p[2] = 0x09; p[3] = 0xAC;
+      // spiTransfer(W_REGISTER | BANK1_RX_CTRL,     p, 4 );
+
+      // - 0x12 FAGC_CTRL     perde pacote
+      // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29;
+      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
+
+      // - 0x1D AGC_GAIN      ?? Pode dar erro
+      // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; p[4] = 0x01;
+      // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5 ); // 4 ou 5
+
+      // -- 0x1E RF_IVGEN     ?? Pode dar erro
+      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01;
+      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4 );
+
+      // -- 0x1F TEST_PKDET
+      // p[0] = 0x2A; p[1] = 0x04; p[2] = 0x00; p[3] = 0x7D;
+      // spiTransfer(W_REGISTER | BANK1_TEST_PKDET, p, 4 );
+
+      selectBank(BANK0);
+
+      // goMode() só funciona com o banco 0 ativo.
+      goMode(m);
+  }
+#endif
 
 //== Controle de estado do chip ===============================================
 
@@ -696,6 +833,12 @@ void acRF24Class::setDataRate(eDataRate dr) {
   }
   wRegister(RF_SETUP);
 
+  #ifdef __SE8R01__
+
+  configBank1();
+  
+  #endif
+
   //* Aqui é feiro uma auto configuração do tempo de espera
   //* em conformidade com a largura de banda escolhida.
   uint8_t ard = (uint8_t)dr;
@@ -1199,7 +1342,7 @@ bool acRF24Class::isFanOut() {
 // Verifica se o rádio está ativo.
 bool acRF24Class::chipActived() {
 
-  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 1);
+  return ((rRegister(SETUP_AW) & SETUP_AW__AWBYTES) > 0);
 }
 
 bool acRF24Class::isAvailableRX() {

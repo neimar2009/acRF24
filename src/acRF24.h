@@ -437,9 +437,6 @@
 // Class RF24
 // -----------------------------------------------
 
-// // Number of radios (Change to desired quantity).
-// #define RADIO_AMOUNT        12
-
 // flag state
   #define MODE__CTRL        0x0007
   #define _MODE__POWERDOWN  0x0000
@@ -582,12 +579,17 @@ public:
   uint8_t getSelfID();
   uint8_t staticTXpayloadWidth();
   #ifdef __SE8R01__
-    uint8_t selectBank(uint8_t bank); // ACTIVATE__CHANGE_BANK
+
+  uint8_t selectBank(uint8_t bank); // ACTIVATE__CHANGE_BANK
+
   #elif defined __nRF24L01P__
-    uint8_t toggleFeature();          // ACTIVATE__TOGGLE_CMD
+
+  uint8_t toggleFeature();          // ACTIVATE__TOGGLE_CMD
   #endif
   #ifdef __TEST_VARS__
-   void getVars(uint8_t* sts); // <- Para testes.
+
+  void getVars(uint8_t* sts); // <- Para testes.
+
   #endif
 protected:
 private:
@@ -604,12 +606,12 @@ private:
   uint8_t pv_selfID     = 0;
   uint8_t pv_targetID   = 0;
   uint8_t pv_sourceID   = 0;
-  uint8_t pv_radioCount = 0;
+  uint8_t pv_radioCount = 5;
   sRadio radio[RADIO_AMOUNT];
 //== Inicialização ============================================================
   void resetConfig();
   #ifdef __SE8R01__
-    void configBank1();
+  void configBank1();
   #endif
 //== Controle do chip =========================================================
   void setCE( bool enable);

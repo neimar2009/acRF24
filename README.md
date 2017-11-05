@@ -2,8 +2,7 @@
 #Library acRF24 for se8r01 and nRF24L01+ for working with arduino and ATtiny84/85#
 ----
 
-:----:
-|So far, the sample files are not upgraded to a new version.|
+*So far, the sample files are not upgraded to a new version.*
 
 ---
      
