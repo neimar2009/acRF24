@@ -117,6 +117,7 @@ void acRF24Class::begin() {
   
     toggleFeature();
   #endif
+  // getMode();                  // Atualiza a variável indicadora de modo.
 }
 
 //-- Privados
@@ -140,7 +141,7 @@ void acRF24Class::resetConfig() {
   wRegister(FEATURE);         // Address: 1Dh
 
   // Calibração
-  //[28h] [32h] [80h] [10h] [00h] default
+  //[28h] [32h] [80h] [10h] [00h] <- Default
   rRegister(SETUP_VALUE);
   recData[3] = 0x90;          // Main band gap wait counter. Default: 0x10 (16us)
   wRegister(SETUP_VALUE);     // Address: 1Eh
@@ -152,13 +153,13 @@ void acRF24Class::resetConfig() {
 
   flushTX();
   flushRX();
-  // getMode();                  // Atualiza a variável indicadora de modo.
 }
 
 #ifdef __SE8R01__   // configBank1()
 
   void acRF24Class::configBank1() {
 
+    // return;
     // -----------------------------------------
     // Calibração inicial
     // -----------------------------------------
@@ -169,61 +170,96 @@ void acRF24Class::resetConfig() {
       setPowerDown();
       selectBank(BANK1);
 
-      // - 0x01 PLL_CTL0
+      // -- 0x01 PLL_CTL0
+      // --  0x00;        0x10;        0x20;   0xF0; <- Default
       p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;
       if (dr == DR_2Mbps) 
            { p[3] = 0xE6; }
       else { p[3] = 0xE4; }
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // // - 0x03 CAL_CTL
+      // // ** 0x03 CAL_CTL
+      // // --  0x20;        0x88;        0x15;        0x40;        0x50; <- Default
       // p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50;
       // spiTransfer(W_REGISTER | BANK1_CAL_CTL,  p, 5);
 
-      // - 0x0A IF_FREQ
+      // ** 0x09 CHAN - (New)
+      // --  0x96;        0x00;        0x00;        0x06; <- Default
+      // --  0x99;        0x00;        0x00;        0x30; 
+      p[0] = 0x99; p[1] = 0x00; p[2] = 0x00; p[3] = 0x30;
+      spiTransfer(W_REGISTER | BANK1_CHAN, p, 4);      
+
+      // ** 0x0A IF_FREQ
+      // --  0x00;        0x00;  0x00; <- default
       p[0] = 0x00; p[1] = 0x00;
       if (dr == DR_2Mbps)
            { p[2]=0x1E;}
       else { p[2]=0x1F;}
       spiTransfer(W_REGISTER | BANK1_IF_FREQ, p, 3);
 
-      // // - 0x0C FDEV
+      // // ** 0x0C FDEV
+      // // --  0x00; <- default
       // if (dr == DR_2Mbps)
       //      { p[0] = 0x29;}
       // else { p[0] = 0x14;}
       // spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // // -- 0x17 DAC_CAL_LOW
+      // ** 0x0D DAC_RANGE - (new)
+      // --  0x00; <- default
+      p[0] = 0x29;
+      spiTransfer(W_REGISTER | BANK1_DAC_RANGE, p, 1);
+
+      // // ** 0x17 DAC_CAL_LOW
+      // // --  0x00;
       // p[0] = 0x00;
       // spiTransfer(W_REGISTER | BANK1_DAC_CAL_LOW, p, 1);
 
-      // // -- 0x18 DAC_CAL_HI
+      // // ** 0x18 DAC_CAL_HI
+      // // --  0x00;
       // p[0] = 0x7F;
       // spiTransfer(W_REGISTER | BANK1_DAC_CAL_HI,  p, 1);
 
-      // // -- 0x1D AGC_GAIN      ?? Pode dar erro
-      // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xEB; p[3] = 0x1C; p[4] = 0x01;
-      // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5);  // 4 ou 5
+      // ** 0x1A DOC_DACI (new)
+      // --  0x40;
+      p[0] = 0x33;
+      spiTransfer(W_REGISTER | BANK1_DOC_DACI,  p, 1);
 
-      // // -- 0x1E RF_IVGEN     ?? Pode dar erro
-      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81;// p[4] = 0x1F;
-      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4);  // 4 ou 5
+      // ** 0x1B DOC_DACQ (new)
+      // --  0x40;
+      p[0] = 0x3A;
+      spiTransfer(W_REGISTER | BANK1_DOC_DACQ,  p, 1);
+
+      // ** 0x1D AGC_GAIN
+      // --  0x02;        0x99;        0xCB;        0x1C;        0x01; <- Default
+      p[0] = 0x02; p[1] = 0xC1; p[2] = 0xEB; p[3] = 0x1C; p[4] = 0x01;
+      spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5);
+
+      // // ** 0x1E RF_IVGEN     ?? Pode dar erro
+      // // --  0x5F;        0x64;        0xA8;        0x29;        0x1F; <- Default
+      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81; p[4] = 0x1F;
+      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 5);
     
-      // // - 0x0F CTUNING     [12h] 
+      // // ** 0x0F CTUNING     [12h]
+      // // --  0x00; <- Default
+      // // p[0] = 0x16;
       // p[0] = 0x12;
       // spiTransfer(W_REGISTER | BANK1_CTUNING, p, 1);
 
-      // // - 0x10 FTUNING     [02h] [05h] 
+      // // ** 0x10 FTUNING
+      // // --  0x00;        0x00; <- Default
+      // // p[0] = 0x04; p[1] = 0x03;
       // p[0] = 0x02; p[1] = 0x05;
-      // spiTransfer(W_REGISTER | BANK1_FTUNING, p, 1);
+      // spiTransfer(W_REGISTER | BANK1_FTUNING, p, 2);
       
-      // // - 0x12 FAGC_CTRL   [00h] [40h] [A3h]
-      // p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3;
-      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 1);
+      // ** 0x12 FAGC_CTRL   [00h] [40h] [A3h]
+      // --  0x00;        0x40;        0x00; <- Default
+      // --  0x00;        0x40;        0x9B; 
+      p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3;
+      spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 3);
     
       selectBank(BANK0);
       uint8_t rConf = rRegister(CONFIG);
-      for (uint8_t i = 0; i < 5; ++i){
+      for (uint8_t i = 0; i < 2; ++i){
         recData[0] = 3;
         wRegister(CONFIG);
         delay(15);
@@ -243,48 +279,101 @@ void acRF24Class::resetConfig() {
 
       selectBank(BANK1);
 
-      // - 0x01 PLL_CTL0
+      // ** 0x01 PLL_CTL0
+      // --  0x00;        0x10;        0x20;   0xF0; <- Default
+      // --  0x40;        0x11;        0x30;   0xF2;
       p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;  
       if (dr == DR_2Mbps)
            { p[3] = 0xE2;}
       else { p[3] = 0xE0;}
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // // - 0x03 CAL_CTL
+      // // ** 0x03 CAL_CTL
+      // // --  0x20;        0x88;        0x15;        0x40;        0x50; <- Default
+      // // --  0x28;        0x88;        0x55;        0x40;        0x50;
       // p[0] = 0x29; p[1] = 0x89; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50;  
       // spiTransfer(W_REGISTER | BANK1_CAL_CTL, p, 5);
 
-      // - 0x0C BANK1_FDEV
+      // ** 0x0C BANK1_FDEV
+      // --  0x00; <- default
       if (dr == DR_2Mbps)
            { p[0] = 0x29;}
       else { p[0] = 0x14;}       
       spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // // -- 0x11 RX_CTRL       !! Dá erro !!
+      // // ** 0x11 RX_CTRL       !! Dá erro !!
+      // // --  0x51;        0xC2;        0x09;        0xAC; <- Default
       // p[0] = 0x55; p[1] = 0xC2; p[2] = 0x09; p[3] = 0xAC;
       // spiTransfer(W_REGISTER | BANK1_RX_CTRL,     p, 4 );
 
-      // // -- 0x12 FAGC_CTRL     perde pacote
-      // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29;
-      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
+      // ** 0x13 FAGC_CTRL_1
+      // --  0x20;        0x13;        0x08;        0x29; <- Default
+      p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29;
+      spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
 
-      // // -- 0x1D AGC_GAIN      ?? Pode dar erro
-      // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; p[4] = 0x01;
-      // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5 ); // 4 ou 5
+      // ** 0x1D AGC_GAIN
+      // --  0x02;        0x99;        0xCB;        0x1C;        0x01; <- Default
+      p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; p[4] = 0x02;
+      spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5 );
 
-      // // -- 0x1E RF_IVGEN     ?? Pode dar erro
-      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01;
-      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4 );
+      // // ** 0x1E RF_IVGEN     ?? Pode dar erro
+      // // --  0x5F;        0x64;        0xA8;        0x29;        0x1F; <- Default
+      // // --  0x97;        0x64;        0xA8;        0x29;        0x97;
+      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01; p[4] = 0x1F;
+      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 5 );
 
-      // // -- 0x1F TEST_PKDET
-      // p[0] = 0x2A; p[1] = 0x04; p[2] = 0x00; p[3] = 0x7D;
-      // spiTransfer(W_REGISTER | BANK1_TEST_PKDET, p, 4 );
+      // ** 0x1F TEST_PKDET
+      // --  0x2A;        0x10;        0x00;        0x7D;        0x2A; <- Default
+      p[0] = 0x2A; p[1] = 0x04; p[2] = 0x00; p[3] = 0x7D; p[4] = 0x2A;
+      spiTransfer(W_REGISTER | BANK1_TEST_PKDET, p, 5 );
 
       selectBank(BANK0);
 
       // goMode() só funciona com o banco 0 ativo.
       goMode(m);
   }
+  /*
+    - 00 BANK1_LINE________[2Ah|00101010b] [01h|00000001b] [00h|00000000b] [00h|00000000b] [00h|00000000b] 
+    - 01 BANK1_PLL_CTL0____[00h|00000000b] [10h|00010000b] [20h|00100000b] [F0h|11110000b] 
+    - 02 BANK1_PLL_CTL1____[00h|00000000b] [5Ah|01011010b] [10h|00010000b] 
+    - 03 BANK1_CAL_CTL_____[20h|00100000b] [88h|10001000b] [15h|00010101b] [40h|01000000b] [50h|01010000b] 
+    - 04 BANK1_A_CNT_REG___[80h|10000000b] 
+    - 05 BANK1_B_CNT_REG___[00h|00000000b] 
+    - 06 BANK1_RESERVED0___[8Eh|10001110b] 
+    - 07 BANK1_STATUS______[8Eh|10001110b] 
+      TX_FULL         ↓ ; Read only. TX FIFO full flag
+      RX_P_NO         7 | 111b ; Read only. Data pipe number for the payload available for reading from RX_FIFO.
+      MAX_RT          ↓ ; Maximum number of TX retransmits interrupt, Write 1 to clear bit.
+      TX_DS           ↓ ; Data Sent TX FIFO interrupt.
+      RX_DR           ↓ ; Data Ready RX FIFO interrupt.
+      BANK            ↑ ; Register BANK status. Bit low register R/W is to register BANK0.
+    - 08 BANK1_STATE_______[00h|00000000b] [00h|00000000b] [00h|00000000b] [00h|00000000b] [00h|00000000b] 
+    - 09 BANK1_CHAN________[96h|10010110b] [00h|00000000b] [00h|00000000b] [04h|00000100b] 
+    - 0A BANK1_IF_FREQ_____[00h|00000000b] [00h|00000000b] [00h|00000000b] 
+    - 0B BANK1_AFC_COR_____[00h|00000000b] 
+    - 0C BANK1_FDEV________[00h|00000000b] 
+    - 0D BANK1_DAC_RANGE___[00h|00000000b] 
+    - 0E BANK1_DAC_IN______[00h|00000000b] 
+    - 0F BANK1_CTUNING_____[00h|00000000b] 
+    - 10 BANK1_FTUNING_____[00h|00000000b] [00h|00000000b] 
+    - 11 BANK1_RX_CTRL_____[51h|01010001b] [C2h|11000010b] [09h|00001001b] [ACh|10101100b] 
+    - 12 BANK1_FAGC_CTRL___[00h|00000000b] [40h|01000000b] [00h|00000000b] 
+    - 13 BANK1_FAGC_CTRL_1_[20h|00100000b] [13h|00010011b] [08h|00001000b] [29h|00101001b] 
+    - 14 BANK1_INDEFINIDO__[8Eh|10001110b] 
+    - 15 BANK1_INDEFINIDO__[8Eh|10001110b] 
+    - 16 BANK1_INDEFINIDO__[8Eh|10001110b] 
+    - 17 BANK1_DAC_CAL_LOW_[00h|00000000b] 
+    - 18 BANK1_DAC_CAL_HI__[00h|00000000b] 
+    - 19 BANK1_RESERVED1___[8Eh|10001110b] 
+    - 1A BANK1_DOC_DACI____[40h|01000000b] 
+    - 1B BANK1_DOC_DACQ____[40h|01000000b] 
+    - 1C BANK1_AGC_CTRL____[00h|00000000b] [9Ah|10011010b] [09h|00001001b] 
+    - 1D BANK1_AGC_GAIN____[02h|00000010b] [99h|10011001b] [CBh|11001011b] [1Ch|00011100b] [01h|00000001b] 
+    - 1E BANK1_RF_IVGEN____[5Fh|01011111b] [64h|01100100b] [A8h|10101000b] [29h|00101001b] [1Fh|00011111b] 
+    - 1F BANK1_TEST_PKDET__[2Ah|00101010b] [10h|00010000b] [00h|00000000b] [7Dh|01111101b] [2Ah|00101010b] 
+    ----------------------------------------
+  */
+
 #endif
 
 //== Controle de estado do chip ===============================================
