@@ -150,6 +150,8 @@ void acRF24Class::resetConfig() {
   recData[1] = 0;
   wRegister(PRE_GURD);        // Address: 1Fh
 
+  flushTX();
+  flushRX();
   // getMode();                  // Atualiza a variável indicadora de modo.
 }
 
@@ -174,7 +176,7 @@ void acRF24Class::resetConfig() {
       else { p[3] = 0xE4; }
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // - 0x03 CAL_CTL
+      // // - 0x03 CAL_CTL
       // p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50;
       // spiTransfer(W_REGISTER | BANK1_CAL_CTL,  p, 5);
 
@@ -185,37 +187,37 @@ void acRF24Class::resetConfig() {
       else { p[2]=0x1F;}
       spiTransfer(W_REGISTER | BANK1_IF_FREQ, p, 3);
 
-      // - 0x0C FDEV
-      if (dr == DR_2Mbps)
-           { p[0] = 0x29;}
-      else { p[0] = 0x14;}
-      spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
+      // // - 0x0C FDEV
+      // if (dr == DR_2Mbps)
+      //      { p[0] = 0x29;}
+      // else { p[0] = 0x14;}
+      // spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // - 0x17 DAC_CAL_LOW
+      // // -- 0x17 DAC_CAL_LOW
       // p[0] = 0x00;
       // spiTransfer(W_REGISTER | BANK1_DAC_CAL_LOW, p, 1);
 
-      // - 0x18 DAC_CAL_HI
+      // // -- 0x18 DAC_CAL_HI
       // p[0] = 0x7F;
       // spiTransfer(W_REGISTER | BANK1_DAC_CAL_HI,  p, 1);
 
-      // - 0x1D AGC_GAIN      ?? Pode dar erro
+      // // -- 0x1D AGC_GAIN      ?? Pode dar erro
       // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xEB; p[3] = 0x1C; p[4] = 0x01;
       // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5);  // 4 ou 5
 
-      // -- 0x1E RF_IVGEN     ?? Pode dar erro
+      // // -- 0x1E RF_IVGEN     ?? Pode dar erro
       // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81;// p[4] = 0x1F;
       // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4);  // 4 ou 5
     
-      // - 0x0F CTUNING     [12h] 
+      // // - 0x0F CTUNING     [12h] 
       // p[0] = 0x12;
       // spiTransfer(W_REGISTER | BANK1_CTUNING, p, 1);
 
-      // - 0x10 FTUNING     [02h] [05h] 
+      // // - 0x10 FTUNING     [02h] [05h] 
       // p[0] = 0x02; p[1] = 0x05;
       // spiTransfer(W_REGISTER | BANK1_FTUNING, p, 1);
       
-      // - 0x12 FAGC_CTRL   [00h] [40h] [A3h]
+      // // - 0x12 FAGC_CTRL   [00h] [40h] [A3h]
       // p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3;
       // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 1);
     
@@ -248,7 +250,7 @@ void acRF24Class::resetConfig() {
       else { p[3] = 0xE0;}
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // - 0x03 CAL_CTL
+      // // - 0x03 CAL_CTL
       // p[0] = 0x29; p[1] = 0x89; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50;  
       // spiTransfer(W_REGISTER | BANK1_CAL_CTL, p, 5);
 
@@ -258,23 +260,23 @@ void acRF24Class::resetConfig() {
       else { p[0] = 0x14;}       
       spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // - 0x11 RX_CTRL       !! Dá erro !!
+      // // -- 0x11 RX_CTRL       !! Dá erro !!
       // p[0] = 0x55; p[1] = 0xC2; p[2] = 0x09; p[3] = 0xAC;
       // spiTransfer(W_REGISTER | BANK1_RX_CTRL,     p, 4 );
 
-      // - 0x12 FAGC_CTRL     perde pacote
+      // // -- 0x12 FAGC_CTRL     perde pacote
       // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29;
       // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
 
-      // - 0x1D AGC_GAIN      ?? Pode dar erro
+      // // -- 0x1D AGC_GAIN      ?? Pode dar erro
       // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; p[4] = 0x01;
       // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 5 ); // 4 ou 5
 
-      // -- 0x1E RF_IVGEN     ?? Pode dar erro
+      // // -- 0x1E RF_IVGEN     ?? Pode dar erro
       // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01;
       // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4 );
 
-      // -- 0x1F TEST_PKDET
+      // // -- 0x1F TEST_PKDET
       // p[0] = 0x2A; p[1] = 0x04; p[2] = 0x00; p[3] = 0x7D;
       // spiTransfer(W_REGISTER | BANK1_TEST_PKDET, p, 4 );
 
@@ -575,31 +577,31 @@ uint8_t acRF24Class::rRXpayload() {
   if(pv_recAmount == 0) return 0;
 
   command( R_RX_PAYLOAD);  // Carrega payload.
-
   if (pv_recAmount == 0) pv_sourceID = 0;
 
-  #ifdef __nRF24L01P__
-    uint8_t a = pv_recAmount;
-    clearRX_DR();             //<- Trava o SE8L01
-    return a;
-  #endif
+  uint8_t a = pv_recAmount;  //<- É alterado por clearRX_DR()
+  // TODO: RX_DR é persistente?
+  if (pv_lastStatus & STATUS__RX_DR) {
+    clearRX_DR();
+  }
+  clearRX_DR();
 
-  return pv_recAmount;
+  return a;
 }
 
-// Método de alto nível, redobrar a atenção ao usar.
+// Método de nível mais baixo, redobrar a atenção ao usar.
 uint8_t acRF24Class::rRXpayload(void* buf, uint8_t len) {
 
+  pv_recAmount = internalRXpayloadWidth();
+  if (len > pv_recAmount) len = pv_recAmount;
   spiTransfer(R_RX_PAYLOAD, payload, buf, len);
-  recData[0] = pv_lastStatus;
 
-  #ifdef __nRF24L01P__
-    len = pv_lastStatus;
-    clearRX_DR();
-    return len;
-  #endif
-
-  return pv_lastStatus;
+  // TODO: RX_DR é persistente?
+  if (pv_lastStatus & STATUS__TX_DS) {
+    clearTX_DS();
+  }
+  clearRX_DR();
+  return len;
 }
 
 // Retorna status
@@ -831,8 +833,7 @@ void acRF24Class::setDataRate(eDataRate dr) {
 
   #ifdef __SE8R01__
 
-  configBank1();
-  
+    configBank1();
   #endif
 
   //* Aqui é feiro uma auto configuração do tempo de espera
@@ -1346,24 +1347,26 @@ bool acRF24Class::isAvailableRX() {
   // TODO: Só pode ser avaliável se o tamanho, dos dados, for maior que zero;
   //       Se Fan-Out estiver ativo e for canal 1;
   //       Se o rádio que está transmitindo estiver na lista de rádios.
-  return !(rRegister( FIFO_STATUS) & FIFO_STATUS__RX_EMPTY);
+  return !(rRegister( FIFO_STATUS) & FIFO_STATUS__RX_EMPTY) && chipActived();
 }
 
 bool acRF24Class::isAvailableTX() {
 
-  bool a = !(nop() & STATUS__TX_FULL);
+  if ( !chipActived()) return false;
+
+  bool a = !(pv_lastStatus & STATUS__TX_FULL);
 
   if (!a && (pv_watchTX != 0)) {
     if (pv_watchTXinterval == 0) pv_watchTXinterval = millis();
     if (millis() - pv_watchTXinterval >= pv_watchTX) {
       pv_watchTXinterval = 0;
       flushTX();
-      // clearMAX_RT();
+      clearIRQ();
     } else {
       reuseTXpayload();
-      delay(4);
+      delayMicroseconds(300);
     }
-    a = !(nop() & STATUS__TX_FULL);
+    a = !(pv_lastStatus & STATUS__TX_FULL);
   }
   return a;
 }
@@ -1389,6 +1392,11 @@ uint8_t acRF24Class::rxPipeNo() {
 uint8_t acRF24Class::getSelfID() {
 
   return pv_selfID;
+}
+
+uint8_t acRF24Class::lastStatus() {
+
+  return pv_lastStatus;
 }
 
 uint8_t acRF24Class::staticTXpayloadWidth() {
