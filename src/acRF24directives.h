@@ -17,7 +17,7 @@
 /************************************************************/
 /*      Number of radios (Change to desired quantity).      */
 /*                                                          */
-#define RADIO_AMOUNT        12
+#define RADIO_AMOUNT        24
 /*                                                          */
 /************************************************************/
 #endif

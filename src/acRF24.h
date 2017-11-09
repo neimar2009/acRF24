@@ -314,7 +314,7 @@
   #define RX_PW_P5__LEN       0x3F // Number of bytes in RX payload in data pipe 5 (1 to 32 bytes)
   #define RX_PW_P5__RESERVED  0xC0 // Only 0 allowed
 //-----------------------------------------------------------------------------
-// RF24 FIFO_STATUS fields 0x17 -> Only 0 allowed
+// RF24 FIFO_STATUS fields 0x17
   #define FIFO_STATUS__RX_EMPTY     0x01 // RX FIFO empty flag.
   #define FIFO_STATUS__RX_FULL      0x02 // RX FIFO full flag.
   #define FIFO_STATUS__RESERVED1    0x0C // Only '00' allowed
@@ -379,17 +379,19 @@
 //-- RF24 delay --
 
   #define SPI_RF24_LIMIT    10000000UL  // Limit is 10000000UL
-  #define T_POWERON             100000  // Tpoweron     100ms
+  #define T_POWERON             100000  // Tpoweron     100mS
   #if defined __SE8R01__
-    #define T_PD2STBY             2000  // Tpd2stby       2ms
-    #define T_STBY2A               210  // Tstby2a      250us
+    #define T_PD2STBY             2000  // Tpd2stby       2mS
+    #define T_STBY2A               250  // Tstby2a      250uS
+    #define T_IRQ                    3  // Tirq           3uS
   #elif defined __nRF24L01P__
-    #define T_PD2STBY             1500  // Tpd2stby     1.5ms
-    #define T_STBY2A               130  // Tstby2a      130us
+    #define T_PD2STBY             1500  // Tpd2stby     1.5mS
+    #define T_STBY2A               130  // Tstby2a      130uS
+    #define T_IRQ                    9  // Tirq         8.2uS
   #endif
-  #define T_DELAY_AGC               20  // Tdelay_AGC    20us
-  #define T_HCE                     10  // Thce          10us
-  #define T_PECE2CSN                 4  // Tpece2csn      4us
+  #define T_DELAY_AGC               20  // Tdelay_AGC    20uS
+  #define T_HCE                     10  // Thce          10uS
+  #define T_PECE2CSN                 4  // Tpece2csn      4uS
   #define T_PECSN2ON                 5  // Capacitance in pF, time in milliseconds.
                                         // resistência interna estimada   : 50Ω
                                         // capacitor escolhido por padrão : 100nF
@@ -578,6 +580,7 @@ public:
   void watchTX(uint32_t ms);
   uint8_t rxPipeNo();               // STATUS       0x07
   uint8_t getSelfID();
+  uint8_t lastStatus();
   uint8_t staticTXpayloadWidth();
   #ifdef __SE8R01__
 
