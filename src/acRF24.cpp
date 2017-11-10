@@ -630,11 +630,11 @@ uint8_t acRF24Class::rRXpayload() {
   pv_recAmount = internalRXpayloadWidth();
   if(pv_recAmount == 0) return 0;
 
-  command( R_RX_PAYLOAD);  // Carrega payload.
-  if (pv_recAmount == 0) pv_sourceID = 0;
-  uint8_t a = pv_recAmount;  //<- É alterado por clearRX_DR()
-  if (pv_lastStatus & STATUS__RX_P_NO) flushRX(); //<** This fixes a bug on the chip. **
-
+  command( R_RX_PAYLOAD);    // Carrega payload.
+  // if (pv_recAmount == 0) pv_sourceID = 0;
+  uint8_t a = pv_recAmount;  //<- É modificado por clearRX_DR().
+  if (pv_lastStatus & STATUS__TX_FULL) flushTX();
+  clearRX_DR();
   return a;
 }
 
@@ -645,7 +645,6 @@ uint8_t acRF24Class::rRXpayload(void* buf, uint8_t len) {
   if (len > pv_recAmount) len = pv_recAmount;
   spiTransfer(R_RX_PAYLOAD, payload, buf, len);
   if (pv_lastStatus & STATUS__TX_FULL) flushTX();
-  if (pv_lastStatus & STATUS__RX_DR) clearRX_DR();
   clearRX_DR();
   return len;
 }
@@ -1168,7 +1167,6 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
   // no registro 'RX_PW_Px'. Deve ser feito o registro
   // no momento de registrar os rádios.
   uint8_t pipe = rxPipeNo();
-  // Verifica se RX_FIFO está vazio
   if (pipe == 7 ) {
     pv_sourceID = 0;
     return 0;
@@ -1396,7 +1394,7 @@ bool acRF24Class::isAvailableRX() {
   //       Se o rádio que está transmitindo estiver na lista de rádios.
   bool ret = !(rRegister( FIFO_STATUS) & FIFO_STATUS__RX_EMPTY) && chipActived();
   if(ret && internalRXpayloadWidth() == 0) {
-    flushRX(); //<** This fixes a bug on the chip. **
+    flushRX();        // <** This fixes a bug on the chip. **<
     memset(payload, 0, 32);
     return false;
   }
@@ -1414,7 +1412,6 @@ bool acRF24Class::isAvailableTX() {
     if (millis() - pv_watchTXinterval >= pv_watchTX) {
       pv_watchTXinterval = 0;
       flushTX();
-      clearIRQ();
     } else {
       reuseTXpayload();
       delayMicroseconds(pv_absoluteARD);
