@@ -599,6 +599,7 @@ protected:
 private:
   uint32_t pv_watchTXinterval = 0;
   uint32_t pv_watchTX = 0;
+  uint32_t pv_absoluteARD = 0;
   uint8_t CS = 0, CE = 0, IRQ = 0;
   uint16_t pv_flagState = MODE__CTRL;
   uint8_t pv_lastStatus = 0;
