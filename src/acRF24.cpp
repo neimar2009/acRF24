@@ -172,95 +172,60 @@ void acRF24Class::resetConfig() {
       selectBank(BANK1);
 
       // -- 0x01 PLL_CTL0
-      // --  0x00;        0x10;        0x20;   0xF0; <- Default
-      p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;
+      // --  0x00;        0x10;        0x20;   0xF0;    <- Default
+      // --  0x00;        0x00;        0x20;   0xE0;    <- HS6206
+      p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;         // <- Suggested
       if (dr == DR_2Mbps) 
            { p[3] = 0xE6; }
       else { p[3] = 0xE4; }
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // // ** 0x03 CAL_CTL
-      // // --  0x20;        0x88;        0x15;        0x40;        0x50; <- Default
-      // p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50;
-      // spiTransfer(W_REGISTER | BANK1_CAL_CTL,  p, 5);
+      // ** 0x03 CAL_CTL - ready
+      // --  0x20;        0x88;        0x15;        0x40;        0x50;   <- Default
+      p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50; //<- Suggested, HS6206
+      spiTransfer(W_REGISTER | BANK1_CAL_CTL,  p, 5);
 
-      // // ** 0x09 CHAN - (New)
-      // // --  0x96;        0x00;        0x00;        0x06; <- Default
-      // p[0] = 0x00; p[1] = 0x00; p[2] = 0x00; p[3] = 0x00; // <- HS6206
-      // p[0] = 0x99; p[1] = 0x00; p[2] = 0x00; p[3] = 0x30;
-      // spiTransfer(W_REGISTER | BANK1_CHAN, p, 4);      
-
-      // ** 0x0A IF_FREQ
-      // --  0x00;        0x00;  0x00; <- default
+      // ** 0x0A IF_FREQ ( RX frequency point )
+      // --  0x00;        0x00;  0x00; <- default, HS6206
       p[0] = 0x00; p[1] = 0x00;
       if (dr == DR_2Mbps)
-           { p[2]=0x1E;}
-      else { p[2]=0x1F;}
+           { p[2] = 0x1E;}  // <- Suggested
+      else { p[2] = 0x1F;}  // <- Suggested
       spiTransfer(W_REGISTER | BANK1_IF_FREQ, p, 3);
 
-      // ** 0x0C FDEV   (repete na segunda etapa)
-      // --  0x00; <- default
+      // ** 0x0C FDEV   ( The max offset of the frequency ) -> repete na segunda etapa
+      // --  0x00;             <- default, HS6206
       if (dr == DR_2Mbps)
-           { p[0] = 0x29;}
-      else { p[0] = 0x14;}
+           { p[0] = 0x29;}  // <- Suggested
+      else { p[0] = 0x14;}  // <- Suggested
       spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // // ** 0x0D DAC_RANGE - (new)
-      // // --  0x00; <- default, HS6206
-      // p[0] = 0x29;
-      // spiTransfer(W_REGISTER | BANK1_DAC_RANGE, p, 1);
-
-      // // ** 0x17 DAC_CAL_LOW
-      // // --  0x00; <- Default
-      // p[0] = 0x00;
-      // spiTransfer(W_REGISTER | BANK1_DAC_CAL_LOW, p, 1);
-
-      // // ** 0x18 DAC_CAL_HI
-      // // --  0x00; <- Default
-      // p[0] = 0x7F;
-      // spiTransfer(W_REGISTER | BANK1_DAC_CAL_HI,  p, 1);
-
-      // // ** 0x1A DOC_DACI (new)
-      // // --  0x40; <- Default
-      // p[0] = 0x33;
-      // spiTransfer(W_REGISTER | BANK1_DOC_DACI,  p, 1);
-
-      // // ** 0x1B DOC_DACQ (new)
-      // // --  0x40; <- Default
-      // p[0] = 0x3A;
-      // spiTransfer(W_REGISTER | BANK1_DOC_DACQ,  p, 1);
-
-      // // ** 0x1D AGC_GAIN
+      // // ** 0x1D AGC_GAIN - ready
       // // --  0x02;        0x99;        0xCB;        0x1C;    <- Default
-      // p[0] = 0x01; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
+      // p[0] = 0x05; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
       // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xEB; p[3] = 0x1C; // <- Suggested
       // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 4);
 
-      // // ** 0x1E RF_IVGEN     ?? Pode dar erro
-      // // --  0x5F;        0x64;        0xA8;        0x29;        0x1F; <- Default
-      // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81; p[4] = 0x1F;
-      // spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 5);
+      // // ** 0x1E RF_IVGEN - ready
+      // // --  0x5F;        0x64;        0xA8;        0x29;    <- Default
+      // p[0] = 0x17; p[1] = 0x64; p[2] = 0x01; p[3] = 0x01; // <- HS6206
+      p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x81; // <- Suggested
+      spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4);
     
-      // // ** 0x0F CTUNING     [12h]
-      // // --  0x00; <- Default
-      // if (dr == DR_2Mbps) // (new)
-      //      { p[0] = 0x16; }
-      // else { p[0] = 0x02; }
-      // spiTransfer(W_REGISTER | BANK1_CTUNING, p, 1);
+      // // ** 0x0F CTUNING  ( AFC coarse tuning register control ) - ready
+      // // --  0x00;        0x00;    <- Default, HS6206
+      // p[0] = 0x02; p[0] = 0x00; // <- Suggested
+      // spiTransfer(W_REGISTER | BANK1_CTUNING, p, 2);
 
-      // // ** 0x10 FTUNING
-      // // --  0x00;        0x00; <- Default
-      // if (dr == DR_2Mbps) // (new)
-      //      { p[0] = 0x02; p[1] = 0x03; }
-      // else { p[0] = 0x02; p[1] = 0x05; }
+      // // ** 0x10 FTUNING  ( AFC fine tuning register control ) - ready
+      // // --  0x00;        0x00;    <- Default, HS6206
+      // p[0] = 0x02; p[1] = 0x05; // <- Suggested
       // spiTransfer(W_REGISTER | BANK1_FTUNING, p, 2);
       
-      // // ** 0x12 FAGC_CTRL
-      // // --  0x00;        0x40;        0x00; <- Default
-      // if (dr == DR_2Mbps) // (new)
-      //      { p[0] = 0x00; p[1] = 0x40; p[2] = 0x9B; }
-      // else { p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3; }
-      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 3);
+      // // ** 0x12 FAGC_CTRL - ready
+      // // --  0x00;        0x40;        0x00;        0x00;    <- Default, HS6206
+      // p[0] = 0x00; p[1] = 0x40; p[2] = 0xA3; p[3] = 0x00; // <- Suggested
+      // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 4);
     
       selectBank(BANK0);
       for (uint8_t i = 0; i < 5; ++i){
@@ -284,53 +249,56 @@ void acRF24Class::resetConfig() {
       selectBank(BANK1);
 
       // ** 0x01 PLL_CTL0
-      // --  0x00;        0x10;        0x20;   0xF0; <- Default
-      // --  0x40;        0x11;        0x30;   0xF2;
-      p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;  
+      // --  0x00;        0x10;        0x20;   0xF0;    <- Default
+      // --  0x00;        0x00;        0x20;   0xE0;    <- HS6206
+      p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;         // <- Suggested
       if (dr == DR_2Mbps)
            { p[3] = 0xE2;}
       else { p[3] = 0xE0;}
       spiTransfer(W_REGISTER | BANK1_PLL_CTL0, p, 4);
 
-      // // ** 0x03 CAL_CTL
+      // // ** 0x03 CAL_CTL - ready
       // // --  0x20;        0x88;        0x15;        0x40;        0x50; <- Default
-      // if (dr == DR_2Mbps) // (new)
-      //      { p[0] = 0x28; p[1] = 0x88; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50; }
-      // else { p[0] = 0x29; p[1] = 0x89; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50; }
-      // spiTransfer(W_REGISTER | BANK1_CAL_CTL, p, 5);
+      p[0] = 0x20; p[1] = 0x08; p[2] = 0x15; p[3] = 0x40; p[4] = 0x50;    //<- Best
+      // p[0] = 0x20; p[1] = 0x08; p[2] = 0x50; p[3] = 0x40; p[4] = 0x50; //<- HS6206
+      // p[0] = 0x29; p[1] = 0x89; p[2] = 0x55; p[3] = 0x40; p[4] = 0x50; //<- Suggested
+      spiTransfer(W_REGISTER | BANK1_CAL_CTL, p, 5);
 
-      // ** 0x0C BANK1_FDEV
-      // --  0x00; <- default
+      // ** 0x0C FDEV   ( The max offset of the frequency ) -> executado na primeira etapa
+      // --  0x00;             <- default, HS6206
       if (dr == DR_2Mbps)
-           { p[0] = 0x29;}
-      else { p[0] = 0x14;}
+           { p[0] = 0x29;}  // <- Suggested
+      else { p[0] = 0x14;}  // <- Suggested
       spiTransfer(W_REGISTER | BANK1_FDEV, p, 1);
 
-      // // ** 0x11 RX_CTRL       !! Dá erro !!
-      // // --  0x51;        0xC2;        0x09;        0xAC; <- Default & HS6206
-      // p[0] = 0x55; p[1] = 0xC2; p[2] = 0x09; p[3] = 0xAC;  // <- Suggested
+      // // ** 0x11 RX_CTRL - ready
+      // // --  0x51;        0xC2;        0x09;        0xAC;    <- Default & HS6206
+      // p[0] = 0x55; p[1] = 0xC2; p[2] = 0x09; p[3] = 0xAC; // <- Suggested
       // spiTransfer(W_REGISTER | BANK1_RX_CTRL,     p, 4 );
 
-      // // ** 0x13 FAGC_CTRL_1
-      // // --  0x20;        0x13;        0x08;        0x29; <- Default
-      // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29;
+      // // ** 0x13 FAGC_CTRL_1 - ready
+      // // --  0x20;        0x13;        0x08;        0x29;    <- Default
+      // p[0] = 0x20; p[1] = 0x13; p[2] = 0x08; p[3] = 0x29; // <- 
+      // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29; // <- Suggested, HS6206
       // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
 
-      // // ** 0x1D AGC_GAIN
+      // // ** 0x1D AGC_GAIN - ready
       // // --  0x02;        0x99;        0xCB;        0x1C;    <- Default
-      // p[0] = 0x01; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
+      // p[0] = 0x02; p[1] = 0x99; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
+      // p[0] = 0x05; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
       // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- Suggested
       // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 4 );
 
-      // // ** 0x1E RF_IVGEN     ?? Pode dar erro
-      // // --  0x5F;        0x64;        0xA8;        0x29;           <- Default
-      p[0] = 0x17; p[1] = 0x64; p[2] = 0x01; p[3] = 0x01; // 0x1016417 <- HS6206
+      // // ** 0x1E RF_IVGEN - ready
+      // // --  0x5F;        0x64;        0xA8;        0x29;    <- Default
+      p[0] = 0x17; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01;    // <- Best
+      // p[0] = 0x17; p[1] = 0x64; p[2] = 0x01; p[3] = 0x01; // <- HS6206
       // p[0] = 0x97; p[1] = 0x64; p[2] = 0x00; p[3] = 0x01; // <- Suggested
       spiTransfer(W_REGISTER | BANK1_RF_IVGEN, p, 4 );
 
-      // ** 0x1F TEST_PKDET
-      // --  0x2A;        0x10;        0x00;        0x7D;              <- Default
-      p[0] = 0x29; p[1] = 0x10; p[2] = 0x00; p[3] = 0x7D; // 0x7D001029 <- HS6206
+      // ** 0x1F TEST_PKDET - ready
+      // --  0x2A;        0x10;        0x00;        0x7D;        <- Default
+      p[0] = 0x29; p[1] = 0x10; p[2] = 0x00; p[3] = 0x7D;     // <- HS6206
       // p[0] = 0x2A; p[1] = 0x04; p[2] = 0x00; p[3] = 0x7D;  // <- Suggested
       spiTransfer(W_REGISTER | BANK1_TEST_PKDET, p, 4 );
 
@@ -628,10 +596,7 @@ uint8_t acRF24Class::rRXpayloadWidth() {
 uint8_t acRF24Class::rRXpayload() {
 
   pv_recAmount = internalRXpayloadWidth();
-  if(pv_recAmount == 0) return 0;
-
   command( R_RX_PAYLOAD);    // Carrega payload.
-  // if (pv_recAmount == 0) pv_sourceID = 0;
   uint8_t a = pv_recAmount;  //<- É modificado por clearRX_DR().
   if (pv_lastStatus & STATUS__TX_FULL) flushTX();
   clearRX_DR();
@@ -1176,6 +1141,7 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
     rRegister(RX_PW_P0 + pipe);// & RX_PW_Px__LEN;
   } else {
     if (command( R_RX_PL_WID) > 32 ){
+      memset(payload, 0, 32);
       pv_sourceID = 0;
       flushRX();
       return 0;
