@@ -583,17 +583,12 @@ public:
   uint8_t lastStatus();
   uint8_t staticTXpayloadWidth();
   #ifdef __SE8R01__
-
-  uint8_t selectBank(uint8_t bank); // ACTIVATE__CHANGE_BANK
-
+    uint8_t selectBank(uint8_t bank); // ACTIVATE__CHANGE_BANK
   #elif defined __nRF24L01P__
-
-  uint8_t toggleFeature();          // ACTIVATE__TOGGLE_CMD
+    uint8_t toggleFeature();          // ACTIVATE__TOGGLE_CMD
   #endif
   #ifdef __TEST_VARS__
-
-  void getVars(uint8_t* sts); // <- Para testes.
-
+    void getVars(uint8_t* sts); // <- Para testes.
   #endif
 protected:
 private:
@@ -616,7 +611,7 @@ private:
 //== Inicialização ============================================================
   void resetConfig();
   #ifdef __SE8R01__
-  void configBank1();
+    void configBank1();
   #endif
 //== Controle do chip =========================================================
   void setCE( bool enable);
