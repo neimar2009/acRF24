@@ -174,7 +174,8 @@ void acRF24Class::resetConfig() {
       // -- 0x01 PLL_CTL0
       // --  0x00;        0x10;        0x20;   0xF0;    <- Default
       // --  0x00;        0x00;        0x20;   0xE0;    <- HS6206
-      p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;         // <- Suggested
+      p[0] = 0x48; p[1] = 0x00; p[2] = 0x10;         // <- Test
+      // p[0] = 0x40; p[1] = 0x00; p[2] = 0x10;         // <- Suggested
       if (dr == DR_2Mbps) 
            { p[3] = 0xE6; }
       else { p[3] = 0xE4; }
@@ -228,7 +229,7 @@ void acRF24Class::resetConfig() {
       // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL, p, 4);
     
       selectBank(BANK0);
-      for (uint8_t i = 0; i < 5; ++i){
+      for (uint8_t i = 0; i < 3; ++i){
         recData[0] = 3;
         wRegister(CONFIG);
         delay(15);
@@ -251,7 +252,8 @@ void acRF24Class::resetConfig() {
       // ** 0x01 PLL_CTL0
       // --  0x00;        0x10;        0x20;   0xF0;    <- Default
       // --  0x00;        0x00;        0x20;   0xE0;    <- HS6206
-      p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;         // <- Suggested
+      p[0] = 0x48; p[1] = 0x01; p[2] = 0x30;         // Teste
+      // p[0] = 0x40; p[1] = 0x01; p[2] = 0x30;         // <- Suggested
       if (dr == DR_2Mbps)
            { p[3] = 0xE2;}
       else { p[3] = 0xE0;}
@@ -278,13 +280,11 @@ void acRF24Class::resetConfig() {
 
       // // ** 0x13 FAGC_CTRL_1 - ready
       // // --  0x20;        0x13;        0x08;        0x29;    <- Default
-      // p[0] = 0x20; p[1] = 0x13; p[2] = 0x08; p[3] = 0x29; // <- 
       // p[0] = 0x00; p[1] = 0x14; p[2] = 0x08; p[3] = 0x29; // <- Suggested, HS6206
       // spiTransfer(W_REGISTER | BANK1_FAGC_CTRL_1, p, 4 );
 
       // // ** 0x1D AGC_GAIN - ready
       // // --  0x02;        0x99;        0xCB;        0x1C;    <- Default
-      // p[0] = 0x02; p[1] = 0x99; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
       // p[0] = 0x05; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- HS6206
       // p[0] = 0x02; p[1] = 0xC1; p[2] = 0xCB; p[3] = 0x1C; // <- Suggested
       // spiTransfer(W_REGISTER | BANK1_AGC_GAIN, p, 4 );
@@ -1132,7 +1132,7 @@ uint8_t acRF24Class::internalRXpayloadWidth() {
   // no registro 'RX_PW_Px'. Deve ser feito o registro
   // no momento de registrar os rádios.
   uint8_t pipe = rxPipeNo();
-  if (pipe == 7 ) {
+  if (pipe > 5 ) {
     pv_sourceID = 0;
     return 0;
   }
@@ -1379,9 +1379,11 @@ bool acRF24Class::isAvailableTX() {
       pv_watchTXinterval = 0;
       flushTX();
     } else {
-      reuseTXpayload();
-      delayMicroseconds(pv_absoluteARD);
+      if(!(rRegister(FIFO_STATUS) & FIFO_STATUS__TX_REUSE_PL)) {
+        reuseTXpayload();
+      }
     }
+    delayMicroseconds(pv_absoluteARD);
     a = !(pv_lastStatus & STATUS__TX_FULL);
   }
   return a;
